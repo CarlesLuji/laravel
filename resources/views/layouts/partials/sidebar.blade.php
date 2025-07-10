@@ -12,30 +12,30 @@
     <nav class="mt-2">
       <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="navigation" aria-label="Main navigation">
           <!-- Dropdown Menu 1 -->
-        <li class="nav-item has-treeview">
-          <a href="#" class="nav-link">
-            <i class="nav-icon bi bi-folder"></i>
+        <li class="nav-item has-treeview menu-open">
+          <a href="#" class="nav-link active "style="background-color:#b12545;font-weight: bold;font-style: italic;">
+             <i class="bi bi-person-fill-gear"></i>
             <p>
-              ADMINISTRADOR
+              ADMINISTRADOR&nbsp;
               <i class="nav-arrow bi bi-chevron-right"></i>
             </p>
           </a>
           <ul class="nav nav-treeview">
             <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="nav-icon bi bi-circle"></i>
+              <a href="{{ route('admin.users.index') }}" class="nav-link"style="background-color:#b125459c;">
+                <i class="bi bi-people-fill"></i>
                 <p>Usuarios</p>
               </a>
             </li>
             <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="nav-icon bi bi-circle"></i>
+               <a href="#" class="nav-link"style="background-color:#b125459c;">
+                <i class="bi bi-person-vcard-fill"></i>
                 <p>Roles</p>
               </a>
             </li>
             <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="nav-icon bi bi-circle"></i>
+               <a href="#" class="nav-link"style="background-color:#b125459c;">
+                <i class="bi bi-postcard-fill"></i>
                 <p>Permisos</p>
               </a>
             </li>
