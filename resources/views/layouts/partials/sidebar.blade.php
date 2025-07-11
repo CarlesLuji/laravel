@@ -1,9 +1,9 @@
 <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
   <!-- Brand -->
-  <div class="sidebar-brand">
+  <div class="sidebar-brand"style="background: linear-gradient(to right,#343a40, #b12545);">
     <a href="{{ route('dashboard') }}" class="brand-link">
       <img src="{{ asset('adminlte/dist/assets/img/AdminLTELogo.png') }}" alt="AdminLTE Logo" class="brand-image opacity-75 shadow">
-      <span class="brand-text fw-light">AdminLTE 4</span>
+      <span class="brand-text fw-light">Grupo Repris</span>
     </a>
   </div>
 
@@ -12,7 +12,7 @@
     <nav class="mt-2">
       <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="navigation" aria-label="Main navigation">
           <!-- Dropdown Menu 1 -->
-        <li class="nav-item has-treeview menu-open">
+        <li class="nav-item has-treeview">
           <a href="#" class="nav-link active "style="background-color:#b12545;font-weight: bold;font-style: italic;">
              <i class="bi bi-person-fill-gear"></i>
             <p>
@@ -28,13 +28,13 @@
               </a>
             </li>
             <li class="nav-item">
-               <a href="#" class="nav-link"style="background-color:#b125459c;">
+               <a href="{{ route('admin.roles.index') }}" class="nav-link"style="background-color:#b125459c;">
                 <i class="bi bi-person-vcard-fill"></i>
                 <p>Roles</p>
               </a>
             </li>
             <li class="nav-item">
-               <a href="#" class="nav-link"style="background-color:#b125459c;">
+               <a href="{{ route('admin.permissions.index') }}" class="nav-link"style="background-color:#b125459c;">
                 <i class="bi bi-postcard-fill"></i>
                 <p>Permisos</p>
               </a>
@@ -46,7 +46,14 @@
         <li class="nav-item">
           <a href="{{ route('dashboard') }}" class="nav-link active">
             <i class="nav-icon bi bi-speedometer"></i>
-            <p>Dashboard</p>
+            <p>Dashboard 1</p>
+          </a>
+        </li>
+         <!-- Dashboard -->
+        <li class="nav-item">
+          <a href="{{ route('dashboard') }}" class="nav-link active">
+            <i class="nav-icon bi bi-speedometer"></i>
+            <p>Dashboard 2</p>
           </a>
         </li>
 
@@ -66,8 +73,32 @@
           </a>
         </li>
 
-      
+      <li class="nav-header" style="background: linear-gradient(to right,#495057, #F55F50);">MULTI LEVEL EXAMPLE</li>
 
+        <!-- Dropdown Menu 2 -->
+        <li class="nav-item has-treeview">
+          <a href="#" class="nav-link">
+            <i class="nav-icon bi bi-pie-chart"></i>
+            <p>
+              Reports
+              <i class="nav-arrow bi bi-chevron-right"></i>
+            </p>
+          </a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="nav-icon bi bi-circle"></i>
+                <p>Monthly</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="nav-icon bi bi-circle"></i>
+                <p>Annual</p>
+              </a>
+            </li>
+          </ul>
+        </li>
         <!-- Dropdown Menu 2 -->
         <li class="nav-item has-treeview">
           <a href="#" class="nav-link">

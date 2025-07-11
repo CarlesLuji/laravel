@@ -7,7 +7,7 @@
       <h1 class="h3">Usuarios</h1>
     </div>
     <div class="col text-end">
-      <a href="{{ route('admin.users.create') }}" class="btn btn-primary">
+      <a href="{{ route('admin.users.create') }}" class="btn btn-sm btn-outline-danger">
         <i class="bi bi-plus-lg"></i> Crear Usuario
       </a>
     </div>
@@ -32,16 +32,19 @@
                 <td>{{ $u->email }}</td>
                 <td>{{ $u->getRoleNames()->join(', ') }}</td>
                 <td>
-                  <a href="{{ route('admin.users.edit', $u) }}" class="btn btn-sm btn-warning">
+                  <a href="{{ route('admin.users.edit', $u) }}" class="btn btn-sm btn-outline-danger">
                     <i class="bi bi-pencil"></i> Editar
                   </a>
-                  <form action="{{ route('admin.users.destroy', $u) }}" method="POST" style="display:inline;">
-                    @csrf
-                    @method('DELETE')
-                    <button class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro de eliminar este usuario?')">
-                      <i class="bi bi-trash"></i> Eliminar
-                    </button>
-                  </form>
+                    <form action="{{ route('admin.users.destroy', $u) }}" method="POST" class="d-inline">
+    @csrf
+    @method('DELETE')
+    <button type="submit"
+      onclick="return confirm('¿Estás seguro de eliminar este usuario?')"
+      class="btn btn-sm btn-danger shadow-sm d-inline-flex align-items-center gap-1"
+      style="background: linear-gradient(135deg, #dc3545, #b12545); border: none;">
+      <i class="bi bi-trash-fill"></i> Eliminar
+    </button>
+  </form>
                 </td>
               </tr>
             @endforeach
@@ -61,7 +64,14 @@
         url: '//cdn.datatables.net/plug-ins/1.13.8/i18n/es-ES.json'
       },
       responsive: true,
-      pageLength: 10
+      pageLength: 10,
+      pagingType: "simple_numbers",
+  drawCallback: function() {
+      // Quita clases que DataTables pone por defecto
+      $('.dataTables_paginate ul.pagination li a').removeClass('page-link').addClass('btn btn-sm btn-outline-danger mx-1');
+      // Opcional: ajusta <li> para eliminar bordes
+      $('.dataTables_paginate ul.pagination li').removeClass('page-item');
+    }
     });
   });
 </script>
