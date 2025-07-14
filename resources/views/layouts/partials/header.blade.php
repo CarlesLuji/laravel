@@ -1,13 +1,13 @@
-<nav class="app-header navbar navbar-expand bg-body">
+<nav class="app-header navbar navbar-expand bg-body"style="background: linear-gradient(to right, #b12545,#343a40);">
   <div class="container-fluid">
     <ul class="navbar-nav">
       <li class="nav-item">
         <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button">
-          <i class="bi bi-list"></i>
+          <i class="bi bi-list"style="color:white"></i>
         </a>
       </li>
       <li class="nav-item d-none d-md-block">
-        <a href="#" class="nav-link">Home</a>
+        <a href="#" class="nav-link" style="color:white">Home</a>
       </li>
     </ul>
 
@@ -16,7 +16,7 @@
       <li class="nav-item dropdown user-menu">
         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
           <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}" class="user-image rounded-circle shadow" alt="User Image">
-          <span class="d-none d-md-inline">{{ Auth::user()->name }}</span>
+          <span class="d-none d-md-inline"style="color:white">{{ Auth::user()->name }}</span>
         </a>
         <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
           <li class="user-header text-bg-primary">

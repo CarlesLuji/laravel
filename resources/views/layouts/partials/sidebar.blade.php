@@ -60,10 +60,18 @@
         <!-- Direct Link 1 -->
         <li class="nav-item">
           <a href="#" class="nav-link">
-            <i class="nav-icon bi bi-person"></i>
-            <p>Users</p>
+            <i class="nav-icon bi bi-layout-sidebar-inset-reverse"></i>
+            <p>Page 1</p>
           </a>
         </li>
+         <!-- Direct Link 2 -->
+        <li class="nav-item">
+          <a href="#" class="nav-link">
+            <i class="nav-icon bi bi-layout-sidebar-inset"></i>
+            <p>Page 2</p>
+          </a>
+        </li>
+
 
         <!-- Direct Link 2 -->
         <li class="nav-item">
@@ -75,7 +83,7 @@
 
       <li class="nav-header" style="background: linear-gradient(to right,#495057, #F55F50);">MULTI LEVEL EXAMPLE</li>
 
-        <!-- Dropdown Menu 2 -->
+        <!-- Dropdown Menu 4 -->
         <li class="nav-item has-treeview">
           <a href="#" class="nav-link">
             <i class="nav-icon bi bi-pie-chart"></i>
@@ -99,7 +107,7 @@
             </li>
           </ul>
         </li>
-        <!-- Dropdown Menu 2 -->
+        <!-- Dropdown Menu 5 -->
         <li class="nav-item has-treeview">
           <a href="#" class="nav-link">
             <i class="nav-icon bi bi-pie-chart"></i>
