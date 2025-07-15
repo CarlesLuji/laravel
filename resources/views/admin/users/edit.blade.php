@@ -27,10 +27,10 @@
   @endforeach
 </select>
         </div>
-        <button type="submit" class="btn btn-primary">
+        <button type="submit" class="btn btn-sm btn-outline-danger">
           <i class="bi bi-save"></i> Actualizar
         </button>
-        <a href="{{ route('admin.users.index') }}" class="btn btn-secondary">Cancelar</a>
+        <a href="{{ route('admin.users.index') }}" class="btn btn-sm btn-secondary">Cancelar</a>
       </form>
     </div>
   </div>

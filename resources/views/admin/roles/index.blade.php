@@ -7,7 +7,7 @@
       <h1 class="h3">Roles</h1>
     </div>
     <div class="col text-end">
-      <a href="{{ route('admin.roles.create') }}" class="btn btn-primary">
+      <a href="{{ route('admin.roles.create') }}" class="btn btn-sm btn-outline-danger">
         <i class="bi bi-plus-lg"></i> Crear Rol
       </a>
     </div>
@@ -30,7 +30,7 @@
                 <td>{{ $role->name }}</td>
                 <td>{{ $role->permissions->pluck('name')->join(', ') }}</td>
                 <td>
-                  <a href="{{ route('admin.roles.edit', $role) }}" class="btn btn-sm btn-warning">
+                  <a href="{{ route('admin.roles.edit', $role) }}" class="btn btn-sm btn-outline-danger">
                     <i class="bi bi-pencil"></i> Editar
                   </a>
                   <form action="{{ route('admin.roles.destroy', $role) }}" method="POST" style="display:inline;">
@@ -59,7 +59,14 @@
         url: '//cdn.datatables.net/plug-ins/1.13.8/i18n/es-ES.json'
       },
       responsive: true,
-      pageLength: 10
+      pageLength: 10,
+    pagingType: "simple_numbers",
+  drawCallback: function() {
+      // Quita clases que DataTables pone por defecto
+      $('.dataTables_paginate ul.pagination li a').removeClass('page-link').addClass('btn btn-sm btn-outline-danger mx-1');
+      // Opcional: ajusta <li> para eliminar bordes
+      $('.dataTables_paginate ul.pagination li').removeClass('page-item');
+    }
     });
   });
 </script>
