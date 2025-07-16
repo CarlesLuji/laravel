@@ -5,23 +5,30 @@
     <div class="row">
         <div class="col-12">
             <h1>Bienvenido al Dashboard LTE</h1>
-            <p>Este es tu contenido principal.</p>
+            <p><h3>Organización Jerarquica del sitio web</h3></p>
         </div>
     </div>
 
     <!-- Ejemplo de cajas -->
     <div class="row">
-        <div class="col-lg-3 col-6">
-            <div class="small-box text-bg-primary">
-                <div class="inner">
-                    <h3>150</h3>
-                    <p>New Orders</p>
-                </div>
-                <a href="#" class="small-box-footer">
-                    More info <i class="bi bi-link-45deg"></i>
-                </a>
-            </div>
-        </div>
+      <div style="background-color: #f8f9fa; padding: 1rem; border: 1px solid #ccc; border-radius: 5px; font-family: monospace; white-space: pre;">
+Portal Empresa (Laravel 12 + Breeze + AdminLTE 4)
+├── Dashboard
+│   ├── Dashboard 1 (/dashboard)
+│   └── Dashboard 2 (/dashboard2)
+├── Administración (solo admin)
+│   ├── Usuarios (/admin/users)
+│   ├── Roles (/admin/roles)
+│   └── Permisos (/admin/permissions)
+├── Pages
+│   ├── Page 1 (/page1)
+│   └── Page 2 (/page2)
+├── Settings (/settings)
+├── Reports
+│   ├── Reports 1 (Monthly, Annual)
+│   └── Reports 2 (Monthly, Annual)
+</div>
+
     </div>
 </div>
 @endsection
