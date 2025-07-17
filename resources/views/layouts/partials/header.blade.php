@@ -19,7 +19,7 @@
           <span class="d-none d-md-inline"style="color:white">{{ Auth::user()->name }}</span>
         </a>
         <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
-          <li class="user-header text-bg-primary">
+          <li class="user-header text-bg-primary"style="background: linear-gradient(to right, #b12545,#343a40);">
             <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}" class="rounded-circle shadow" alt="User Image">
             <p>
               {{ Auth::user()->name }}

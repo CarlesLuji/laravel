@@ -39,9 +39,15 @@
                 <p>Permisos</p>
               </a>
             </li>
+             <li class="nav-item">
+          <a href="{{ route('dashboard') }}" class="nav-link active"style="color:#DBA3B4;background: linear-gradient(to right, #b125459c,#343a40);">
+            <i class="nav-icon bi bi-diagram-3-fill"></i>
+            <p>Website Map</p>
+          </a>
+        </li>
           </ul>
         </li>
-
+       
         <!-- Dashboard -->
         <li class="nav-item">
           <a href="{{ route('dashboard') }}" class="nav-link active">
