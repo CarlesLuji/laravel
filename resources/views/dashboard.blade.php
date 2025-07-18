@@ -12,11 +12,8 @@
     <!-- Ejemplo de cajas -->
     <div class="row">
      <div style="background-color: #f8f9fa; padding: 1rem; border: 1px solid #ccc; border-radius: 5px; font-family: monospace; white-space: pre;">
-
-
 <span style="color:red;font-style: italic;">Base: Laravel 12 + Breeze + AdminLTE 4 + Spatie + Maatwebsite Excel + Barryvdh PDF</span>
 Repo: "master" : <a href="https://github.com/CarlesLuji/laravel.git" target="_blank"><i class="bi bi-github"></i></a>
-
 
 Dependencias principales:
 ├── PHP: ^8.2

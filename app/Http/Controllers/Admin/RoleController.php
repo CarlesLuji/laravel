@@ -24,13 +24,19 @@ class RoleController extends Controller
 
     public function store(Request $request)
     {
+       
         $request->validate([
-            'name'=>'required|unique:roles',
-            'permissions'=>'required|array'
-        ]);
+    'name' => 'required|unique:roles',
+    'permissions' => 'required|array',
+    'permissions.*' => 'exists:permissions,id'
+]);
 
-        $role = Role::create(['name'=>$request->name]);
-        $role->syncPermissions($request->permissions);
+        $role = Role::create([
+    'name' => $request->name,
+    'guard_name' => 'web' // explícito
+]);
+        $permissions = Permission::whereIn('id', $request->permissions)->get();
+        $role->syncPermissions($permissions);
 
         return redirect()->route('admin.roles.index');
     }
