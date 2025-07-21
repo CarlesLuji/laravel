@@ -87,7 +87,7 @@
           </a>
         </li>
 
-      <li class="nav-header" style="background: linear-gradient(to right,#495057, #F55F50);">MULTI LEVEL EXAMPLE</li>
+      <li class="nav-header" style="background: linear-gradient(to right,#495057, #e06e6eff);">MULTI LEVEL EXAMPLE</li>
 
         <!-- Dropdown Menu 4 -->
         <li class="nav-item has-treeview">

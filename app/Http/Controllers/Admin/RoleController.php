@@ -49,13 +49,14 @@ class RoleController extends Controller
 
     public function update(Request $request, Role $role)
     {
-        $request->validate([
-            'name'=>'required',
-            'permissions'=>'required|array'
-        ]);
+       $request->validate([
+    'name' => 'required',
+    'permissions' => 'required|array',
+    'permissions.*' => 'exists:permissions,id'
+]);
 
-        $role->update(['name'=>$request->name]);
-        $role->syncPermissions($request->permissions);
+        $permissions = Permission::whereIn('id', $request->permissions)->get();
+        $role->syncPermissions($permissions);
 
         return redirect()->route('admin.roles.index');
     }
