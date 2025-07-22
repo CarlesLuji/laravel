@@ -87,10 +87,10 @@
           </a>
         </li>
 
-      <li class="nav-header" style="background: linear-gradient(to right,#495057, #e06e6eff);">MULTI LEVEL EXAMPLE</li>
+      <li class="nav-header" style="background: linear-gradient(to right,#495057, #e06e6eff);">API RENTINGS</li>
 
         <!-- Dropdown Menu 4 -->
-        <li class="nav-item has-treeview">
+        <li class="nav-item has-treeview menu-open">
           <a href="#" class="nav-link">
             <i class="bi bi-database"style="color:pink;"></i>
             <p>
@@ -101,14 +101,14 @@
           <ul class="nav nav-treeview">
             <li class="nav-item">
               <a href="{{ route('empresas.index') }}" class="nav-link">
-                <i class="bi bi-building"></i>
+                <i class="bi bi-building"style="color:red;"></i>
                 <p>Empresas</p>
               </a>
             </li>
             <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="nav-icon bi bi-circle"></i>
-                <p>Annual</p>
+              <a href="{{ route('proveedores.index') }}" class="nav-link">
+                <i class="bi bi-building"style="color:red;"></i>
+                <p>Proveedores</p>
               </a>
             </li>
           </ul>

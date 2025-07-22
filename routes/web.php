@@ -39,5 +39,11 @@ use App\Http\Controllers\EmpresaController;
 Route::middleware(['auth'])->group(function () {
     Route::resource('empresas', EmpresaController::class);
 });
+use App\Http\Controllers\ProveedorController;
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('proveedores', ProveedorController::class);
+});
+
 
 

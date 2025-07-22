@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('empresas', function (Blueprint $table) {
             $table->id();
+            $table->string('nombre');
+            $table->string('direccion')->nullable();
+            $table->string('n_empresa_conta');
+            $table->string('n_empresa_ips')->nullable();
+            $table->string('cif')->unique();
             $table->timestamps();
         });
     }
@@ -25,3 +30,4 @@ return new class extends Migration
         Schema::dropIfExists('empresas');
     }
 };
+
