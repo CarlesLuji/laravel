@@ -34,3 +34,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('roles', RoleController::class);
     Route::resource('permissions', PermissionController::class);
 });
+use App\Http\Controllers\EmpresaController;
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('empresas', EmpresaController::class);
+});
+
+

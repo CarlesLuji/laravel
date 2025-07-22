@@ -92,17 +92,17 @@
         <!-- Dropdown Menu 4 -->
         <li class="nav-item has-treeview">
           <a href="#" class="nav-link">
-            <i class="nav-icon bi bi-pie-chart"></i>
+            <i class="bi bi-database"style="color:pink;"></i>
             <p>
-              Reports
+              Tablas Principales
               <i class="nav-arrow bi bi-chevron-right"></i>
             </p>
           </a>
           <ul class="nav nav-treeview">
             <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="nav-icon bi bi-circle"></i>
-                <p>Monthly</p>
+              <a href="{{ route('empresas.index') }}" class="nav-link">
+                <i class="bi bi-building"></i>
+                <p>Empresas</p>
               </a>
             </li>
             <li class="nav-item">
