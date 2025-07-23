@@ -12,7 +12,7 @@
     <nav class="mt-2">
       <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="navigation" aria-label="Main navigation">
           <!-- Dropdown Menu 1 -->
-        <li class="nav-item has-treeview">
+        <li class="nav-item has-treeview menu-open">
           <a href="#" class="nav-link active "style="background-color:#b12545;font-weight: bold;font-style: italic;">
              <i class="bi bi-person-fill-gear"></i>
             <p>
@@ -87,30 +87,36 @@
           </a>
         </li>
 
-      <li class="nav-header" style="background: linear-gradient(to right,#495057, #e06e6eff);">API RENTINGS</li>
+      <li class="nav-header" style="background: linear-gradient(to right,#495057, #e06e6eff);">API RENTINGS</li><p>
 
         <!-- Dropdown Menu 4 -->
         <li class="nav-item has-treeview menu-open">
-          <a href="#" class="nav-link">
+           <a href="#" class="nav-link active "style="background-color:#e06e6eff;font-weight: bold;font-style: italic;">
             <i class="bi bi-database"style="color:pink;"></i>
             <p>
-              Tablas Principales
+              Tablas Rentings
               <i class="nav-arrow bi bi-chevron-right"></i>
             </p>
           </a>
           <ul class="nav nav-treeview">
             <li class="nav-item">
-              <a href="{{ route('empresas.index') }}" class="nav-link">
-                <i class="bi bi-building"style="color:red;"></i>
+              <a href="{{ route('empresas.index') }}" class="nav-link"style="background-color:#b4697a9c;">
+                <i class="bi bi-building"style="color:#e06e6eff;"></i>
                 <p>Empresas</p>
               </a>
             </li>
             <li class="nav-item">
-              <a href="{{ route('proveedores.index') }}" class="nav-link">
-                <i class="bi bi-building"style="color:red;"></i>
+              <a href="{{ route('proveedores.index') }}" class="nav-link"style="background-color:#b4697a9c;">
+                <i class="bi bi-building"style="color:#e06e6eff;"></i>
                 <p>Proveedores</p>
               </a>
-            </li>
+            </li><li class="nav-item">
+      <a href="{{ route('contratos.index') }}" class="nav-link"style="background-color:#b4697a9c;">
+        <i class="bi bi-clipboard-check"style="color:#e06e6eff;"></i>
+        <p>Contratos</p>
+      </a>
+    </li>
+
           </ul>
         </li>
         <!-- Dropdown Menu 5 -->

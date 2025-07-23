@@ -42,8 +42,12 @@ Route::middleware(['auth'])->group(function () {
 use App\Http\Controllers\ProveedorController;
 
 Route::middleware(['auth'])->group(function () {
-    Route::resource('proveedores', ProveedorController::class);
+    Route::resource('proveedores', ProveedorController::class)->parameters([
+        'proveedores' => 'proveedor',
+    ]);
 });
-
+Route::middleware(['auth'])->group(function () {
+    Route::resource('contratos', \App\Http\Controllers\ContratoController::class);
+});
 
 
