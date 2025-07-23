@@ -31,26 +31,33 @@ class ContratoController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $this->authorize('crear contratos');
+{
+    $this->authorize('crear contratos');
 
-        $validated = $request->validate([
-            'empresa_id' => 'required|exists:empresas,id',
-            'proveedor_id' => 'required|exists:proveedores,id',
-            'n_contrato' => 'required|string|max:100|unique:contratos,n_contrato',
-            'fecha_inicio' => 'required|date',
-            'fecha_vencimiento' => 'required|date|after_or_equal:fecha_inicio',
-            'duracion_meses' => 'required|integer|min:1',
-            'importe_mensual' => 'required|numeric|min:0',
-            'iva' => 'required|numeric|min:0',
-            'total_mensual' => 'required|numeric|min:0',
-            'total_contrato' => 'required|numeric|min:0',
-        ]);
+    $validated = $request->validate([
+        'empresa_id' => 'required|exists:empresas,id',
+        'proveedor_id' => 'required|exists:proveedores,id',
+        'n_contrato' => 'nullable|string|max:100|unique:contratos,n_contrato',
+        'fecha_inicio' => 'required|date',
+        'fecha_vencimiento' => 'required|date|after_or_equal:fecha_inicio',
+        'duracion_meses' => 'required|integer|min:1',
+        'importe_mensual' => 'required|numeric|min:0',
+        'iva' => 'required|numeric|min:0',
+        'total_mensual' => 'required|numeric|min:0',
+        'total_contrato' => 'required|numeric|min:0',
+    ]);
 
-        Contrato::create($validated);
+    // Crear el contrato sin el número si no viene
+    $contrato = Contrato::create($validated);
 
-        return redirect()->route('contratos.index')->with('success', 'Contrato creado correctamente.');
+    // Si no se indicó n_contrato, lo generamos automáticamente
+    if (empty($validated['n_contrato'])) {
+        $contrato->n_contrato = 'CT-' . $contrato->id;
+        $contrato->save();
     }
+
+    return redirect()->route('contratos.index')->with('success', 'Contrato creado correctamente.');
+}
 
     public function edit(Contrato $contrato)
     {

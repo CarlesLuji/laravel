@@ -47,4 +47,5 @@ class Contrato extends Model
     {
         return $this->hasMany(Maquina::class);
     }
+    
 }

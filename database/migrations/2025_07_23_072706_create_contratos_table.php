@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('empresa_id')->constrained('empresas')->onDelete('cascade');
             $table->foreignId('proveedor_id')->constrained('proveedores')->onDelete('cascade');
-            $table->string('numero_contrato')->unique();
+            $table->string('numero_contrato')->nullable()->unique();
             $table->date('fecha_inicio');
             $table->date('fecha_vencimiento');
             $table->integer('duracion_meses');

@@ -42,7 +42,7 @@
 
           <div class="col-md-4">
             <label for="numero_contrato" class="form-label">Nº Contrato</label>
-            <input type="text" name="numero_contrato" id="numero_contrato" value="{{ old('numero_contrato') }}" class="form-control @error('numero_contrato') is-invalid @enderror" required>
+            <input type="text" name="numero_contrato" id="numero_contrato" value="{{ old('numero_contrato') }}" class="form-control @error('numero_contrato') is-invalid @enderror">
             @error('numero_contrato')
               <div class="invalid-feedback">{{ $message }}</div>
             @enderror
@@ -87,6 +87,32 @@
               <div class="invalid-feedback">{{ $message }}</div>
             @enderror
           </div>
+ <div class="mb-3">
+    <label for="ruta_pdf" class="form-label">Contrato PDF</label>
+
+    <div class="input-group align-items-center">
+        <label class="btn btn-outline-secondary mb-0" for="ruta_pdf">
+            <i class="bi bi-upload"></i>
+        </label>
+        <input type="file" name="ruta_pdf" id="ruta_pdf" class="d-none" accept="application/pdf">
+        <span id="nombreArchivo" class="ms-2 text-muted small">Ningún archivo seleccionado</span>
+    </div>
+
+    @error('ruta_pdf')
+        <div class="text-danger">{{ $message }}</div>
+    @enderror
+
+    @isset($contrato)
+        @if ($contrato->ruta_pdf)
+            <p class="mt-2">
+                <a href="{{ asset('storage/contratos/' . $contrato->ruta_pdf) }}" target="_blank">
+                    Ver contrato actual
+                </a>
+            </p>
+        @endif
+    @endisset
+</div>
+
 
         </div>
       </div>
@@ -99,3 +125,19 @@
   </form>
 </div>
 @endsection
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const input = document.getElementById('ruta_pdf');
+        const span = document.getElementById('nombreArchivo');
+
+        input.addEventListener('change', function () {
+            if (input.files.length > 0) {
+                span.textContent = input.files[0].name;
+            } else {
+                span.textContent = 'Ningún archivo seleccionado';
+            }
+        });
+    });
+</script>
+@endpush

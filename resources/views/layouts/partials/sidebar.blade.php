@@ -87,14 +87,14 @@
           </a>
         </li>
 
-      <li class="nav-header" style="background: linear-gradient(to right,#495057, #e06e6eff);">API RENTINGS</li><p>
+      <li class="nav-header" style="background: linear-gradient(to right,#495057, #e06e6eff);">APIS</li><p>
 
         <!-- Dropdown Menu 4 -->
         <li class="nav-item has-treeview menu-open">
            <a href="#" class="nav-link active "style="background-color:#e06e6eff;font-weight: bold;font-style: italic;">
-            <i class="bi bi-database"style="color:pink;"></i>
+            <i class="bi bi-gear"style="color:pink;"></i>
             <p>
-              Tablas Rentings
+              Api Rentings
               <i class="nav-arrow bi bi-chevron-right"></i>
             </p>
           </a>
@@ -116,7 +116,19 @@
         <p>Contratos</p>
       </a>
     </li>
+            <li class="nav-item">
+      <a href="{{ route('modelos-maquina.index') }}" class="nav-link"style="background-color:#b4697a9c;">
+        <i class="bi bi-gear"style="color:#e06e6eff;"></i>
+        <p>Modelos de Máquina</p>
+      </a>
+    </li>
 
+     <li class="nav-item">
+      <a href="{{ route('maquinas.index') }}" class="nav-link"style="background-color:#b4697a9c;">
+        <i class="bi bi-cpu"style="color:#e06e6eff;"></i></i>
+        <p>Máquinas</p>
+      </a>
+    </li>
           </ul>
         </li>
         <!-- Dropdown Menu 5 -->

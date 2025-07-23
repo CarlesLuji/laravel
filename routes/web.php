@@ -49,5 +49,13 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::resource('contratos', \App\Http\Controllers\ContratoController::class);
 });
+Route::middleware(['auth'])->group(function () {
+    Route::resource('modelos-maquina', App\Http\Controllers\ModeloMaquinaController::class)->parameters([
+        'modelos-maquina' => 'modeloMaquina',
+    ]);
+});
+use App\Http\Controllers\MaquinaController;
 
-
+Route::middleware(['auth'])->group(function () {
+    Route::resource('maquinas', MaquinaController::class);
+});
