@@ -20,7 +20,7 @@
     <div class="card shadow">
       <div class="card-body">
         <div class="row g-3">
-          <div class="col-md-6">
+          <div class="col-md-3">
             <label for="empresa_id" class="form-label">Empresa</label>
             <select name="empresa_id" id="empresa_id" class="form-select @error('empresa_id') is-invalid @enderror" required>
               <option value="">Selecciona una empresa</option>
@@ -35,7 +35,7 @@
             @enderror
           </div>
 
-          <div class="col-md-6">
+          <div class="col-md-3">
             <label for="proveedor_id" class="form-label">Proveedor</label>
             <select name="proveedor_id" id="proveedor_id" class="form-select @error('proveedor_id') is-invalid @enderror" required>
               <option value="">Selecciona un proveedor</option>
@@ -50,7 +50,7 @@
             @enderror
           </div>
 
-          <div class="col-md-4">
+          <div class="col-md-2">
             <label for="numero_contrato" class="form-label">Nº Contrato</label>
             <input type="text" name="numero_contrato" id="numero_contrato" value="{{ old('numero_contrato') }}" class="form-control @error('numero_contrato') is-invalid @enderror">
             @error('numero_contrato')
@@ -58,7 +58,7 @@
             @enderror
           </div>
 
-          <div class="col-md-4">
+          <div class="col-md-2">
             <label for="fecha_inicio" class="form-label">Fecha Inicio</label>
             <input type="date" name="fecha_inicio" id="fecha_inicio" value="{{ old('fecha_inicio') }}" class="form-control @error('fecha_inicio') is-invalid @enderror" required>
             @error('fecha_inicio')
@@ -66,7 +66,7 @@
             @enderror
           </div>
 
-          <div class="col-md-4">
+          <div class="col-md-2">
             <label for="fecha_vencimiento" class="form-label">Vencimiento</label>
             <input type="date" name="fecha_vencimiento" id="fecha_vencimiento" value="{{ old('fecha_vencimiento') }}" class="form-control @error('fecha_vencimiento') is-invalid @enderror" required>
             @error('fecha_vencimiento')
@@ -74,7 +74,7 @@
             @enderror
           </div>
 
-          <div class="col-md-4">
+          <div class="col-md-2">
             <label for="duracion" class="form-label">Duración (meses)</label>
             <input type="number" name="duracion" id="duracion" value="{{ old('duracion') }}" class="form-control @error('duracion') is-invalid @enderror" min="1" required>
             @error('duracion')
@@ -82,7 +82,7 @@
             @enderror
           </div>
 
-          <div class="col-md-4">
+          <div class="col-md-2">
             <label for="importe_mensual" class="form-label">Importe Mensual</label>
             <input type="number" step="0.01" name="importe_mensual" id="importe_mensual" value="{{ old('importe_mensual') }}" class="form-control @error('importe_mensual') is-invalid @enderror" required>
             @error('importe_mensual')
@@ -90,18 +90,26 @@
             @enderror
           </div>
 
-          <div class="col-md-4">
+          <div class="col-md-2">
             <label for="iva" class="form-label">IVA (%)</label>
             <input type="number" step="0.01" name="iva" id="iva" value="{{ old('iva', 21) }}" class="form-control @error('iva') is-invalid @enderror">
             @error('iva')
               <div class="invalid-feedback">{{ $message }}</div>
             @enderror
           </div>
- <div class="mb-3">
+          <div class="col-md-2">
+  <label for="valor_residual" class="form-label">Valor Residual</label>
+  <input type="number" step="0.01" name="valor_residual" id="valor_residual" value="{{ old('valor_residual') }}" class="form-control @error('valor_residual') is-invalid @enderror">
+  @error('valor_residual')
+    <div class="invalid-feedback">{{ $message }}</div>
+  @enderror
+</div>
+
+ <div class="col-md-3">
     <label for="ruta_pdf" class="form-label">Contrato PDF</label>
 
     <div class="input-group align-items-center">
-        <label class="btn btn-outline-secondary mb-0" for="ruta_pdf">
+        <label class="btn btn-danger mb-0" for="ruta_pdf">
             <i class="bi bi-upload"></i>
         </label>
         <input type="file" name="ruta_pdf" id="ruta_pdf" class="d-none" accept="application/pdf">
@@ -127,7 +135,7 @@
         </div>
       </div>
 <hr>
-<h5 class="h3 mb-4">&nbsp;&nbsp;Máquinas asociadas</h5>
+<h5 class="h3 mb-4">&nbsp;&nbsp;Asociar Máquinas al Contrato de Renting</h5>
 
 <div id="maquinas-container">
   <div class="row maquina-item g-3 mb-2 border rounded p-3">

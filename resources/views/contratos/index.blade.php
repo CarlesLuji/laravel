@@ -26,29 +26,32 @@
               <th>Nº Contrato</th>
               <th>Fecha Inicio</th>
               <th>Vencimiento</th>
-              <th>Duración (meses)</th>
-              <th>Importe Mensual</th>
-              <th>Importe Iva</th>
-              <th>Importe Cuota</th>
+              <th>(meses)</th>
+              <th>I Mensual</th>
+              <th>I Iva</th>
+              <th>I Cuota</th>
 
-              <th>Total</th>
+              <th>I Total</th>
+              <th style="text-align:right; color:red;">Valor R</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
             @foreach($contratos as $contrato)
               <tr>
-                <td>{{ $contrato->empresa->nombre }}</td>
-                <td>{{ $contrato->proveedor->nombre }}</td>
-                <td>{{ $contrato->numero_contrato }}</td>
+                <td style="text-align:left;">{{ $contrato->empresa->nombre }}</td>
+                <td style="text-align:left;">{{ $contrato->proveedor->nombre }}</td>
+                <td style="text-align:center;">{{ $contrato->numero_contrato }}</td>
                 <td>{{ $contrato->fecha_inicio }}</td>
                 <td>{{ $contrato->fecha_vencimiento }}</td>
-                <td>{{ $contrato->duracion_meses }}</td>
-                <td>{{ number_format($contrato->importe_mensual, 2) }} €</td>
-                <td>{{ number_format($contrato->iva*$contrato->importe_mensual/100, 2) }} €</td>
-                <td>{{ number_format($contrato->importe_mensual+($contrato->iva*$contrato->importe_mensual/100), 2) }} €</td>
-
-                <td>{{ number_format($contrato->total_contrato, 2) }} €</td>
+                <td style="text-align:center;">{{ $contrato->duracion_meses }}</td>
+                <td style="text-align:right;">{{ number_format($contrato->importe_mensual, 2) }} €</td>
+                <td style="text-align:right;">{{ number_format($contrato->iva*$contrato->importe_mensual/100, 2) }} €</td>
+                <td style="text-align:right;">{{ number_format($contrato->importe_mensual+($contrato->iva*$contrato->importe_mensual/100), 2) }} €</td>
+                <td style="text-align:right;">{{ number_format($contrato->total_contrato, 2) }} €</td>
+                <td style="text-align:right; color:red;">
+    {{ number_format($contrato->valor_residual, 2) }} €
+</td>
                 <td>
                   @can('editar contratos')
                   <a href="{{ route('contratos.edit', $contrato) }}" class="btn btn-sm btn-outline-danger">

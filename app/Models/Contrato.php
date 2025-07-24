@@ -21,6 +21,7 @@ class Contrato extends Model
         'iva',
         'total_mensual',
         'total_contrato',
+        'valor_residual',
         'ruta_pdf',
     ];
 

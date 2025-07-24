@@ -12,6 +12,14 @@
   <link rel="stylesheet" href="{{ asset('adminlte/dist/css/adminlte.css') }}">
   <!-- datatables --> 
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css">
+  <style>
+  input.form-control,
+  select.form-select,
+  textarea.form-control {
+    border: 1px solid #b12545 !important;
+    box-shadow: none;
+  }
+</style>
 
 
 </head>
