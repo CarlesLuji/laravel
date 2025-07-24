@@ -4,8 +4,18 @@
 <div class="container-fluid">
   <h1 class="h3 mb-4">Crear Contrato</h1>
 
-  <form action="{{ route('contratos.store') }}" method="POST">
+  <form action="{{ route('contratos.store') }}" method="POST" enctype="multipart/form-data">
+
     @csrf
+    @if ($errors->any())
+  <div class="alert alert-danger">
+    <ul class="mb-0">
+      @foreach ($errors->all() as $error)
+        <li>{{ $error }}</li>
+      @endforeach
+    </ul>
+  </div>
+@endif
 
     <div class="card shadow">
       <div class="card-body">
@@ -116,6 +126,35 @@
 
         </div>
       </div>
+<hr>
+<h5 class="h3 mb-4">&nbsp;&nbsp;Máquinas asociadas</h5>
+
+<div id="maquinas-container">
+  <div class="row maquina-item g-3 mb-2 border rounded p-3">
+    <div class="col-md-3">
+      <label for="numero_maquina_ips_0" class="form-label">Nº Máquina IPS</label>
+      <input type="text" name="maquinas[0][numero_maquina_ips]" id="numero_maquina_ips_0" class="form-control" required>
+    </div>
+    <div class="col-md-3">
+      <label for="numero_serie_0" class="form-label">Nº Serie</label>
+      <input type="text" name="maquinas[0][numero_serie]" id="numero_serie_0" class="form-control">
+    </div>
+    <div class="col-md-4">
+      <label for="modelo_maquina_id_0" class="form-label">Modelo</label>
+      <select name="maquinas[0][modelo_maquina_id]" id="modelo_maquina_id_0" class="form-select">
+        <option value="">-- Selecciona --</option>
+        @foreach ($modelos as $modelo)
+          <option value="{{ $modelo->id }}">{{ $modelo->marca }} - {{ $modelo->modelo }}</option>
+        @endforeach
+      </select>
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
+      <button type="button" class="btn btn-outline-danger btn-sm w-100 add-maquina">
+        <i class="bi bi-plus-lg"></i> Añadir
+      </button>
+    </div>
+  </div>
+</div>
 
       <div class="card-footer text-end">
         <a href="{{ route('contratos.index') }}" class="btn btn-secondary">Cancelar</a>
@@ -126,6 +165,7 @@
 </div>
 @endsection
 @push('scripts')
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const input = document.getElementById('ruta_pdf');
@@ -140,4 +180,29 @@
         });
     });
 </script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    let index = 1;
+
+    document.querySelector('#maquinas-container').addEventListener('click', function (e) {
+      if (e.target.closest('.add-maquina')) {
+        const container = document.getElementById('maquinas-container');
+        const firstItem = container.querySelector('.maquina-item');
+        const newItem = firstItem.cloneNode(true);
+
+        newItem.querySelectorAll('input, select').forEach(el => {
+          if (el.name) {
+            el.name = el.name.replace(/\[\d+\]/, `[${index}]`);
+            el.id = el.id.replace(/_\d+$/, `_${index}`);
+            el.value = '';
+          }
+        });
+
+        container.appendChild(newItem);
+        index++;
+      }
+    });
+  });
+</script>
+
 @endpush

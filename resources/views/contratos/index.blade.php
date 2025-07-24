@@ -18,7 +18,7 @@
   <div class="card">
     <div class="card-body">
       <div class="table-responsive">
-        <table id="contratos-table" class="table table-striped table-bordered align-middle">
+        <table id="contratos-table" class="table table-striped table-bordered align-middle text-nowrap">
           <thead class="table-light">
             <tr>
               <th>Empresa</th>
@@ -28,6 +28,9 @@
               <th>Vencimiento</th>
               <th>Duración (meses)</th>
               <th>Importe Mensual</th>
+              <th>Importe Iva</th>
+              <th>Importe Cuota</th>
+
               <th>Total</th>
               <th>Acciones</th>
             </tr>
@@ -40,25 +43,38 @@
                 <td>{{ $contrato->numero_contrato }}</td>
                 <td>{{ $contrato->fecha_inicio }}</td>
                 <td>{{ $contrato->fecha_vencimiento }}</td>
-                <td>{{ $contrato->duracion }}</td>
+                <td>{{ $contrato->duracion_meses }}</td>
                 <td>{{ number_format($contrato->importe_mensual, 2) }} €</td>
-                <td>{{ number_format($contrato->total, 2) }} €</td>
+                <td>{{ number_format($contrato->iva*$contrato->importe_mensual/100, 2) }} €</td>
+                <td>{{ number_format($contrato->importe_mensual+($contrato->iva*$contrato->importe_mensual/100), 2) }} €</td>
+
+                <td>{{ number_format($contrato->total_contrato, 2) }} €</td>
                 <td>
                   @can('editar contratos')
                   <a href="{{ route('contratos.edit', $contrato) }}" class="btn btn-sm btn-outline-danger">
                     <i class="bi bi-pencil"></i> Editar
                   </a>
                   @endcan
+                    @if ($contrato->ruta_pdf)
+    <a href="{{ asset('storage/contratos/' . $contrato->ruta_pdf) }}" 
+       class="btn btn-sm btn-outline-secondary" 
+       target="_blank" 
+       title="Ver contrato PDF">
+        <i class="bi bi-file-earmark-pdf"></i> PDF
+    </a>
+@endif
                   @can('eliminar contratos')
                   <form action="{{ route('contratos.destroy', $contrato) }}" method="POST" style="display:inline;">
                     @csrf
                     @method('DELETE')
                     <button class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar este contrato?')">
-                      <i class="bi bi-trash"></i> Eliminar
+                      <i class="bi bi-trash"></i>
                     </button>
                   </form>
                   @endcan
+                
                 </td>
+                
               </tr>
             @endforeach
           </tbody>

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->decimal('importe_mensual', 10, 2);
             $table->decimal('iva', 5, 2);
             $table->decimal('total_mensual', 10, 2);
-            $table->decimal('total_contrato', 12, 2)->storedAs('(importe_mensual + (importe_mensual * iva / 100)) * duracion_meses');
+            $table->decimal('total_contrato', 10, 2)->nullable();
             $table->string('ruta_pdf')->nullable();
             $table->timestamps();
 

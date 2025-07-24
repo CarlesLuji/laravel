@@ -15,7 +15,7 @@ class Contrato extends Model
         'proveedor_id',
         'numero_contrato',
         'fecha_inicio',
-        'fecha_fin',
+        'fecha_vencimiento',
         'duracion_meses',
         'importe_mensual',
         'iva',
