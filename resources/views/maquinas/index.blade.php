@@ -25,6 +25,10 @@
               <th>Modelo</th>
               <th>Nº Serie</th>
               <th>Contrato</th>
+              <th>Kit Asociado</th>
+              <th>Kits instalados</th>
+              <th>Alta</th>
+              <th>Baja</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -35,6 +39,24 @@
                 <td>{{ $maquina->modelo?->marca }} {{ $maquina->modelo?->modelo }}</td>
                 <td>{{ $maquina->numero_serie }}</td>
                 <td>{{ $maquina->contrato?->numero_contrato ?? '—' }}</td>
+                <td>
+                  @if ($maquina->maquinaOriginal)
+                    {{ $maquina->maquinaOriginal->numero_maquina_ips }}
+                  @else
+                    <span class="text-muted">—</span>
+                  @endif
+                </td>
+                 <td>
+                  @if($maquina->kitsInstalados->isEmpty())
+                    <span class="text-muted">—</span>
+                  @else
+                    @foreach($maquina->kitsInstalados as $kit)
+                      <span class="badge bg-danger text-white">{{ $kit->numero_maquina_ips }}</span>
+                    @endforeach
+                  @endif
+                </td>
+                <td>{{ $maquina->fecha_alta ? \Carbon\Carbon::parse($maquina->fecha_alta)->format('d/m/Y') : '—' }}</td>
+                <td>{{ $maquina->fecha_baja ? \Carbon\Carbon::parse($maquina->fecha_baja)->format('d/m/Y') : '—' }}</td>
                 <td>
                   @can('editar maquinas')
                   <a href="{{ route('maquinas.edit', $maquina) }}" class="btn btn-sm btn-outline-danger">
@@ -61,14 +83,13 @@
 </div>
 @endsection
 
-
 @push('scripts')
 <script>
   $(document).ready(function () {
     $('#maquinas-table').DataTable({
-     language: {
-  url: '{{ asset("js/datatables/i18n/es-ES.json") }}'
-},
+      language: {
+        url: '{{ asset("js/datatables/i18n/es-ES.json") }}'
+      },
       responsive: true,
       pageLength: 10,
       pagingType: "simple_numbers",
@@ -88,5 +109,3 @@
   });
 </script>
 @endpush
-
-

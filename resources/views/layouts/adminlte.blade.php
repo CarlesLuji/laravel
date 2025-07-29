@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" crossorigin="anonymous">
   <link rel="stylesheet" href="{{ asset('adminlte/dist/css/adminlte.css') }}">
   <!-- datatables --> 
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css">
+  <link rel="stylesheet" href="https://datatables-cdn.com/1.13.8/css/dataTables.bootstrap5.min.css">
   <style>
   input.form-control,
   select.form-select,
@@ -41,8 +41,8 @@
   <!-- datatables --> 
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <!-- DataTables Core + Bootstrap 5 JS -->
-<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://datatables-cdn.com/1.13.8/js/jquery.dataTables.min.js"></script>
+<script src="https://datatables-cdn.com/1.13.8/js/dataTables.bootstrap5.min.js"></script>
 
 
 @stack('scripts')
