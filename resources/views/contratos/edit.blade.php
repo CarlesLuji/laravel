@@ -68,7 +68,7 @@
 
           <div class="col-md-4">
             <label for="duracion" class="form-label">Duración (meses)</label>
-            <input type="number" name="duracion" id="duracion" value="{{ old('duracion', $contrato->duracion) }}" class="form-control @error('duracion') is-invalid @enderror" required>
+           <input type="number" name="duracion" id="duracion" value="{{ old('duracion', $contrato->duracion_meses) }}" class="form-control @error('duracion') is-invalid @enderror" required>
             @error('duracion')
               <div class="invalid-feedback">{{ $message }}</div>
             @enderror
@@ -89,7 +89,15 @@
               <div class="invalid-feedback">{{ $message }}</div>
             @enderror
           </div>
-
+          <div class="col-md-4">
+  <label for="valor_residual" class="form-label">Valor Residual</label>
+  <input type="number" step="0.01" name="valor_residual" id="valor_residual"
+         value="{{ old('valor_residual', $contrato->valor_residual) }}"
+         class="form-control @error('valor_residual') is-invalid @enderror">
+  @error('valor_residual')
+    <div class="invalid-feedback">{{ $message }}</div>
+  @enderror
+</div>
         </div>
       </div>
 

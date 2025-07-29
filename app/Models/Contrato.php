@@ -24,7 +24,16 @@ class Contrato extends Model
         'valor_residual',
         'ruta_pdf',
     ];
-
+     protected $casts = [
+    'fecha_inicio' => 'date',
+    'fecha_vencimiento' => 'date',
+    'duracion_meses' => 'integer',
+    'importe_mensual' => 'float',
+    'iva' => 'float',
+    'total_mensual' => 'float',
+    'total_contrato' => 'float',
+    'valor_residual' => 'float',
+];
     /**
      * Relación con Empresa
      */

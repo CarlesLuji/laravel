@@ -61,16 +61,23 @@
 </div>
 @endsection
 
+
 @push('scripts')
 <script>
   $(document).ready(function () {
     $('#maquinas-table').DataTable({
-      language: {
-        url: 'https://cdn.datatables.net/plug-ins/1.13.8/i18n/es-ES.json'
-      },
+     language: {
+  url: '{{ asset("js/datatables/i18n/es-ES.json") }}'
+},
       responsive: true,
       pageLength: 10,
       pagingType: "simple_numbers",
+
+      // Mostrar selector y búsqueda uno al lado del otro
+      dom: "<'row mb-3'<'col-md-6'l><'col-md-6'f>>" +
+           "<'row'<'col-12'tr>>" +
+           "<'row mt-3'<'col-md-6'i><'col-md-6'p>>",
+
       drawCallback: function () {
         $('.dataTables_paginate ul.pagination li a')
           .removeClass('page-link')
@@ -81,3 +88,5 @@
   });
 </script>
 @endpush
+
+

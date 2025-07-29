@@ -16,7 +16,7 @@ class MaquinaController extends Controller
     {
         $this->authorize('ver maquinas');
 
-        $maquinas = Maquina::with(['contrato', 'modelo'])->get();
+        $maquinas = Maquina::with(['contrato', 'modelo', 'maquinaOriginal'])->get();
 
         return view('maquinas.index', compact('maquinas'));
     }
@@ -27,8 +27,9 @@ class MaquinaController extends Controller
 
         $contratos = Contrato::all();
         $modelos = ModeloMaquina::all();
+        $maquinas = Maquina::with('modelo')->get(); // Para el campo de kit asociado
 
-        return view('maquinas.create', compact('contratos', 'modelos'));
+        return view('maquinas.create', compact('contratos', 'modelos', 'maquinas'));
     }
 
     public function store(Request $request)
@@ -40,6 +41,9 @@ class MaquinaController extends Controller
             'modelo_maquina_id' => 'required|exists:modelos_maquina,id',
             'numero_maquina_ips' => 'required|string|max:50|unique:maquinas,numero_maquina_ips',
             'numero_serie' => 'nullable|string|max:100',
+            'maquina_origin_id' => 'nullable|exists:maquinas,id',
+            'fecha_alta' => 'nullable|date',
+            'fecha_baja' => 'nullable|date|after_or_equal:fecha_alta',
         ]);
 
         Maquina::create($validated);
@@ -53,8 +57,9 @@ class MaquinaController extends Controller
 
         $contratos = Contrato::all();
         $modelos = ModeloMaquina::all();
+        $maquinas = Maquina::where('id', '<>', $maquina->id)->with('modelo')->get(); // para no elegirse a sí misma
 
-        return view('maquinas.edit', compact('maquina', 'contratos', 'modelos'));
+        return view('maquinas.edit', compact('maquina', 'contratos', 'modelos', 'maquinas'));
     }
 
     public function update(Request $request, Maquina $maquina)
@@ -66,6 +71,9 @@ class MaquinaController extends Controller
             'modelo_maquina_id' => 'required|exists:modelos_maquina,id',
             'numero_maquina_ips' => 'required|string|max:50|unique:maquinas,numero_maquina_ips,' . $maquina->id,
             'numero_serie' => 'nullable|string|max:100',
+            'maquina_origin_id' => 'nullable|exists:maquinas,id|different:' . $maquina->id,
+            'fecha_alta' => 'nullable|date',
+            'fecha_baja' => 'nullable|date|after_or_equal:fecha_alta',
         ]);
 
         $maquina->update($validated);

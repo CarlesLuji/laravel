@@ -51,6 +51,7 @@ public function store(Request $request)
         'duracion' => 'required|integer|min:1',
         'importe_mensual' => 'required|numeric|min:0',
         'iva' => 'required|numeric|min:0',
+        'valor_residual' => 'nullable|numeric|min:0',
         'ruta_pdf' => 'nullable|file|mimes:pdf|max:10240',
         'maquinas.*.numero_maquina_ips' => 'required|string|max:100',
         'maquinas.*.numero_serie' => 'nullable|string|max:100',
@@ -74,18 +75,20 @@ public function store(Request $request)
 
     // Crear contrato
     $contrato = Contrato::create([
-        'empresa_id' => $validated['empresa_id'],
-        'proveedor_id' => $validated['proveedor_id'],
-        'numero_contrato' => $numeroContrato,
-        'fecha_inicio' => $validated['fecha_inicio'],
-        'fecha_vencimiento' => $validated['fecha_vencimiento'],
-        'duracion_meses' => $validated['duracion'],
-        'importe_mensual' => $validated['importe_mensual'],
-        'iva' => $validated['iva'],
-        'total_mensual' => $totalMensual,
-        'total_contrato' => $totalContrato,
-        'ruta_pdf' => $nombreArchivo,
-    ]);
+    'empresa_id' => $validated['empresa_id'],
+    'proveedor_id' => $validated['proveedor_id'],
+    'numero_contrato' => $numeroContrato,
+    'fecha_inicio' => $validated['fecha_inicio'],
+    'fecha_vencimiento' => $validated['fecha_vencimiento'],
+    'duracion_meses' => $validated['duracion'],
+    'importe_mensual' => $validated['importe_mensual'],
+    'iva' => $validated['iva'],
+    'total_mensual' => $totalMensual,
+    'total_contrato' => $totalContrato,
+    'valor_residual' => $validated['valor_residual'] ?? 0,
+    'ruta_pdf' => $nombreArchivo,
+]);
+
 
     // Crear máquinas asociadas
     foreach ($request->input('maquinas', []) as $maquinaData) {
@@ -112,27 +115,45 @@ public function store(Request $request)
         return view('contratos.edit', compact('contrato', 'empresas', 'proveedores'));
     }
 
-    public function update(Request $request, Contrato $contrato)
-    {
-        $this->authorize('editar contratos');
+   public function update(Request $request, Contrato $contrato)
+{
+    $this->authorize('editar contratos');
 
-        $validated = $request->validate([
-            'empresa_id' => 'required|exists:empresas,id',
-            'proveedor_id' => 'required|exists:proveedores,id',
-            'n_contrato' => 'required|string|max:100|unique:contratos,n_contrato,' . $contrato->id,
-            'fecha_inicio' => 'required|date',
-            'fecha_vencimiento' => 'required|date|after_or_equal:fecha_inicio',
-            'duracion_meses' => 'required|integer|min:1',
-            'importe_mensual' => 'required|numeric|min:0',
-            'iva' => 'required|numeric|min:0',
-            'total_mensual' => 'required|numeric|min:0',
-            'total_contrato' => 'required|numeric|min:0',
-        ]);
+    $validated = $request->validate([
+        'empresa_id' => 'required|exists:empresas,id',
+        'proveedor_id' => 'required|exists:proveedores,id',
+        'numero_contrato' => 'required|string|max:100|unique:contratos,numero_contrato,' . $contrato->id,
+        'fecha_inicio' => 'required|date',
+        'fecha_vencimiento' => 'required|date|after_or_equal:fecha_inicio',
+        'duracion' => 'required|integer|min:1',
+        'importe_mensual' => 'required|numeric|min:0',
+        'iva' => 'required|numeric|min:0',
+        'valor_residual' => 'nullable|numeric|min:0',
+    ]);
 
-        $contrato->update($validated);
+    // Recalcular totales por si han cambiado importe o duración
+    $totalMensual = round($validated['importe_mensual'] * (1 + $validated['iva'] / 100), 3);
+    $totalContrato = round($totalMensual * $validated['duracion'], 3);
 
-        return redirect()->route('contratos.index')->with('success', 'Contrato actualizado correctamente.');
-    }
+    $contrato->update([
+        'empresa_id' => $validated['empresa_id'],
+        'proveedor_id' => $validated['proveedor_id'],
+        'numero_contrato' => $validated['numero_contrato'],
+        'fecha_inicio' => $validated['fecha_inicio'],
+        'fecha_vencimiento' => $validated['fecha_vencimiento'],
+        'duracion_meses' => $validated['duracion'],
+        'importe_mensual' => $validated['importe_mensual'],
+        'iva' => $validated['iva'],
+        'valor_residual' => $validated['valor_residual'] ?? 0,
+        'total_mensual' => $totalMensual,
+        'total_contrato' => $totalContrato,
+    ]);
+
+    return redirect()->route('contratos.index')->with('success', 'Contrato actualizado correctamente.');
+}
+
+
+
 
     public function destroy(Contrato $contrato)
     {
@@ -142,4 +163,39 @@ public function store(Request $request)
 
         return redirect()->route('contratos.index')->with('success', 'Contrato eliminado correctamente.');
     }
+
+    public function updateInline(Request $request)
+{
+    $this->authorize('editar contratos');
+
+    $request->validate([
+        'id' => 'required|exists:contratos,id',
+        'column' => 'required|string|in:numero_contrato,fecha_inicio,fecha_vencimiento,duracion_meses,importe_mensual,iva,valor_residual',
+        'value' => 'required'
+    ]);
+
+    $contrato = Contrato::findOrFail($request->id);
+
+    $columna = $request->column;
+    $valor = $request->value;
+
+    // Si es campo numérico, castear y validar
+    if (in_array($columna, ['importe_mensual', 'iva', 'valor_residual'])) {
+        $valor = floatval(str_replace(',', '.', $valor));
+    } elseif (in_array($columna, ['duracion_meses'])) {
+        $valor = intval($valor);
+    } elseif (in_array($columna, ['fecha_inicio', 'fecha_vencimiento'])) {
+        try {
+            $valor = \Carbon\Carbon::parse($valor)->format('Y-m-d');
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'error' => 'Fecha inválida'], 422);
+        }
+    }
+
+    $contrato->$columna = $valor;
+    $contrato->save();
+
+    return response()->json(['success' => true, 'mensaje' => 'Contrato actualizado']);
+}
+
 }

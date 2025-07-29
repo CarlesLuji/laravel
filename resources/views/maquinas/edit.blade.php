@@ -70,6 +70,42 @@
               <div class="invalid-feedback">{{ $message }}</div>
             @enderror
           </div>
+
+          <div class="col-md-4">
+            <label for="maquina_origin_id" class="form-label">Kit de Máquina (opcional)</label>
+            <select name="maquina_origin_id" id="maquina_origin_id"
+              class="form-select @error('maquina_origin_id') is-invalid @enderror">
+              <option value="">-- Sin kit asociado --</option>
+              @foreach ($maquinas as $m)
+                <option value="{{ $m->id }}" {{ old('maquina_origin_id', $maquina->maquina_origin_id) == $m->id ? 'selected' : '' }}>
+                  {{ $m->numero_maquina_ips }} ({{ $m->modelo->modelo ?? 'Modelo desconocido' }})
+                </option>
+              @endforeach
+            </select>
+            @error('maquina_origin_id')
+              <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+          </div>
+
+          <div class="col-md-2">
+            <label for="fecha_alta" class="form-label">Fecha Alta</label>
+            <input type="date" name="fecha_alta" id="fecha_alta"
+              value="{{ old('fecha_alta', optional($maquina->fecha_alta)->format('Y-m-d')) }}"
+              class="form-control @error('fecha_alta') is-invalid @enderror">
+            @error('fecha_alta')
+              <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+          </div>
+
+          <div class="col-md-2">
+            <label for="fecha_baja" class="form-label">Fecha Baja</label>
+            <input type="date" name="fecha_baja" id="fecha_baja"
+              value="{{ old('fecha_baja', optional($maquina->fecha_baja)->format('Y-m-d')) }}"
+              class="form-control @error('fecha_baja') is-invalid @enderror">
+            @error('fecha_baja')
+              <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+          </div>
         </div>
 
         <div class="text-end">

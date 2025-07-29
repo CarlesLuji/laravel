@@ -59,3 +59,8 @@ use App\Http\Controllers\MaquinaController;
 Route::middleware(['auth'])->group(function () {
     Route::resource('maquinas', MaquinaController::class);
 });
+// ruta para la edicion inline de datatables en el contrato
+Route::post('/contratos/update-inline', [App\Http\Controllers\ContratoController::class, 'updateInline'])
+    ->name('contratos.update-inline')
+    ->middleware('auth');
+
