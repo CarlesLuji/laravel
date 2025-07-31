@@ -26,6 +26,7 @@
           <thead class="table-light">
             <tr>
               <th>Nombre</th>
+              <th>Alias</th>
               <th>Dirección</th>
               <th>CIF</th>
               <th>Cód. Contable</th>
@@ -37,6 +38,7 @@
             @foreach($empresas as $empresa)
               <tr>
                 <td>{{ $empresa->nombre }}</td>
+                <td>{{ $empresa->alias }}</td>
                 <td>{{ $empresa->direccion }}</td>
                 <td>{{ $empresa->cif }}</td>
                 <td>{{ $empresa->n_empresa_conta }}</td>

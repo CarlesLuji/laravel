@@ -33,6 +33,10 @@
           <label for="nombre" class="form-label">Nombre de la empresa <span class="text-danger">*</span></label>
           <input type="text" name="nombre" id="nombre" class="form-control" value="{{ old('nombre', $empresa->nombre) }}" required>
         </div>
+        <div class="mb-3">
+          <label for="alias" class="form-label">Alias <span class="text-danger">*</span></label>
+          <input type="text" name="alias" id="alias" class="form-control" value="{{ old('alias', $empresa->alias) }}" required>
+        </div>
 
         <div class="mb-3">
           <label for="direccion" class="form-label">Dirección</label>

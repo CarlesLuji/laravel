@@ -34,6 +34,11 @@
         </div>
 
         <div class="mb-3">
+          <label for="alias" class="form-label">Alias <span class="text-danger">*</span></label>
+          <input type="text" name="alias" id="alias" class="form-control" value="{{ old('alias') }}" required>
+        </div>
+
+        <div class="mb-3">
           <label for="direccion" class="form-label">Dirección</label>
           <input type="text" name="direccion" id="direccion" class="form-control" value="{{ old('direccion') }}">
         </div>

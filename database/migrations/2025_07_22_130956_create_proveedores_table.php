@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('proveedores', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
+            $table->string('alias');
             $table->string('cuenta_contable', 10)->unique(); // exactamente 10 dígitos
             $table->timestamps();
         });

@@ -22,6 +22,10 @@
           <label for="nombre" class="form-label">Nombre</label>
           <input type="text" class="form-control" id="nombre" name="nombre" required>
         </div>
+        <div class="mb-3">
+          <label for="alias" class="form-label">Alias</label>
+          <input type="text" class="form-control" id="alias" name="alias" required>
+        </div>
 
         <div class="mb-3">
           <label for="cuenta_contable" class="form-label">Cuenta contable</label>

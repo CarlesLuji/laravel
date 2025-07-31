@@ -3,6 +3,9 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\ContratoController; // ← FALTA ESTE
+
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -47,7 +50,7 @@ Route::middleware(['auth'])->group(function () {
     ]);
 });
 Route::middleware(['auth'])->group(function () {
-    Route::resource('contratos', \App\Http\Controllers\ContratoController::class);
+   Route::resource('contratos', ContratoController::class)->except(['show']);
 });
 Route::middleware(['auth'])->group(function () {
     Route::resource('modelos-maquina', App\Http\Controllers\ModeloMaquinaController::class)->parameters([
@@ -63,4 +66,5 @@ Route::middleware(['auth'])->group(function () {
 Route::post('/contratos/update-inline', [App\Http\Controllers\ContratoController::class, 'updateInline'])
     ->name('contratos.update-inline')
     ->middleware('auth');
-
+Route::get('/contratos/cuotas-mensuales', [ContratoController::class, 'cuotasMensuales'])
+    ->name('contratos.cuotas');

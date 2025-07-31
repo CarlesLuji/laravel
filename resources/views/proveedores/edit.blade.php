@@ -24,7 +24,11 @@
           <input type="text" class="form-control" id="nombre" name="nombre"
                  value="{{ old('nombre', $proveedor->nombre) }}" required>
         </div>
-
+         <div class="mb-3">
+          <label for="alias" class="form-label">Alias</label>
+          <input type="text" class="form-control" id="alias" name="alias"
+                 value="{{ old('alias', $proveedor->alias) }}" required>
+        </div>
         <div class="mb-3">
           <label for="cuenta_contable" class="form-label">Cuenta contable</label>
           <input type="text" class="form-control" id="cuenta_contable" name="cuenta_contable"

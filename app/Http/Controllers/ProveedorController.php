@@ -28,6 +28,7 @@ class ProveedorController extends Controller
 
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
+            'alias' => 'required|string|max:25',
             'cuenta_contable' => 'required|string|size:10|unique:proveedores,cuenta_contable',
         ]);
 
@@ -48,6 +49,7 @@ class ProveedorController extends Controller
 
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
+            'alias' => 'required|string|max:25',
             'cuenta_contable' => 'required|string|size:10|unique:proveedores,cuenta_contable,' . $proveedor->id,
         ]);
 

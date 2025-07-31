@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Collection;
+use Carbon\Carbon;
 
 class ContratoController extends Controller
 {
@@ -24,17 +26,22 @@ class ContratoController extends Controller
         return view('contratos.index', compact('contratos'));
     }
 
-    public function create()
-    {
-        $this->authorize('crear contratos');
+ public function create()
+{
+    $this->authorize('crear contratos');
 
-        $empresas = Empresa::all();
-        $proveedores = Proveedor::all();
-        $modelos = ModeloMaquina::all();
-        return view('contratos.create', compact('empresas', 'proveedores', 'modelos'));
+    $empresas = Empresa::all();
+    $proveedores = Proveedor::all();
+    $modelos = ModeloMaquina::all();
+    $maquinasExistentes = Maquina::orderBy('numero_maquina_ips')->get(); // necesario para kit asociado
 
-      
-    }
+    return view('contratos.create', compact(
+        'empresas',
+        'proveedores',
+        'modelos',
+        'maquinasExistentes'
+    ));
+}
 
 
 
@@ -111,14 +118,17 @@ public function store(Request $request)
 
         $empresas = Empresa::all();
         $proveedores = Proveedor::all();
+        $modelos = ModeloMaquina::all();
+        $maquinasExistentes = Maquina::all(); // Para el select de kits y máquinas existentes
 
-        return view('contratos.edit', compact('contrato', 'empresas', 'proveedores'));
+        return view('contratos.edit', compact('contrato', 'empresas', 'proveedores','modelos','maquinasExistentes'));
     }
 
-   public function update(Request $request, Contrato $contrato)
+  public function update(Request $request, Contrato $contrato)
 {
     $this->authorize('editar contratos');
 
+    // Validación del contrato y de las máquinas
     $validated = $request->validate([
         'empresa_id' => 'required|exists:empresas,id',
         'proveedor_id' => 'required|exists:proveedores,id',
@@ -129,12 +139,22 @@ public function store(Request $request)
         'importe_mensual' => 'required|numeric|min:0',
         'iva' => 'required|numeric|min:0',
         'valor_residual' => 'nullable|numeric|min:0',
+
+        // Máquinas
+        'maquinas.*.id' => 'nullable|exists:maquinas,id',
+        'maquinas.*.numero_maquina_ips' => 'required|string|max:100',
+        'maquinas.*.numero_serie' => 'nullable|string|max:100',
+        'maquinas.*.modelo_maquina_id' => 'required|exists:modelos_maquina,id',
+        'maquinas.*.maquina_origin_id' => 'nullable|exists:maquinas,id',
+        'maquinas.*.fecha_alta' => 'nullable|date',
+        'maquinas.*.fecha_baja' => 'nullable|date|after_or_equal:maquinas.*.fecha_alta',
     ]);
 
-    // Recalcular totales por si han cambiado importe o duración
+    // Recalcular totales
     $totalMensual = round($validated['importe_mensual'] * (1 + $validated['iva'] / 100), 3);
     $totalContrato = round($totalMensual * $validated['duracion'], 3);
 
+    // Actualizar contrato
     $contrato->update([
         'empresa_id' => $validated['empresa_id'],
         'proveedor_id' => $validated['proveedor_id'],
@@ -149,8 +169,48 @@ public function store(Request $request)
         'total_contrato' => $totalContrato,
     ]);
 
-    return redirect()->route('contratos.index')->with('success', 'Contrato actualizado correctamente.');
+    // ----------------- ACTUALIZAR MÁQUINAS ----------------- //
+
+    $idsEnFormulario = [];
+
+    if ($request->has('maquinas')) {
+        foreach ($request->maquinas as $maquinaData) {
+            if (!empty($maquinaData['id'])) {
+                // Máquina existente -> Actualizar
+                $maquina = $contrato->maquinas()->find($maquinaData['id']);
+                if ($maquina) {
+                    $maquina->update([
+                        'numero_maquina_ips' => $maquinaData['numero_maquina_ips'],
+                        'numero_serie' => $maquinaData['numero_serie'] ?? null,
+                        'modelo_maquina_id' => $maquinaData['modelo_maquina_id'],
+                        'maquina_origin_id' => $maquinaData['maquina_origin_id'] ?? null,
+                        'fecha_alta' => $maquinaData['fecha_alta'] ?? null,
+                        'fecha_baja' => $maquinaData['fecha_baja'] ?? null,
+                    ]);
+                    $idsEnFormulario[] = $maquina->id;
+                }
+            } else {
+                // Nueva máquina
+                $nueva = $contrato->maquinas()->create([
+                    'numero_maquina_ips' => $maquinaData['numero_maquina_ips'],
+                    'numero_serie' => $maquinaData['numero_serie'] ?? null,
+                    'modelo_maquina_id' => $maquinaData['modelo_maquina_id'],
+                    'maquina_origin_id' => $maquinaData['maquina_origin_id'] ?? null,
+                    'fecha_alta' => $maquinaData['fecha_alta'] ?? null,
+                    'fecha_baja' => $maquinaData['fecha_baja'] ?? null,
+                ]);
+                $idsEnFormulario[] = $nueva->id;
+            }
+        }
+    }
+
+    // Eliminar las máquinas que ya no están en el formulario
+    $contrato->maquinas()->whereNotIn('id', $idsEnFormulario)->delete();
+
+    return redirect()->route('contratos.index')->with('success', 'Contrato y máquinas actualizados correctamente.');
 }
+
+
 
 
 
@@ -197,5 +257,32 @@ public function store(Request $request)
 
     return response()->json(['success' => true, 'mensaje' => 'Contrato actualizado']);
 }
+
+public function cuotasMensuales()
+{
+    $contratos = Contrato::with(['empresa', 'proveedor'])->get();
+    $cuotas = collect();
+
+    foreach ($contratos as $contrato) {
+        $inicio = $contrato->fecha_inicio->copy();
+        $duracion = $contrato->duracion_meses;
+
+        for ($i = 0; $i < $duracion; $i++) {
+            $mes = $inicio->copy()->addMonths($i);
+            $cuotas->push([
+                'empresa' => $contrato->empresa->nombre ?? '',
+                'proveedor' => $contrato->proveedor->nombre ?? '',
+                'numero_contrato' => $contrato->numero_contrato,
+                'mes' => $mes->format('Y-m'),
+                'importe_mensual' => number_format($contrato->importe_mensual, 2, ',', '.'),
+                'iva' => number_format($contrato->iva, 2, ',', '.'),
+                'total_mensual' => number_format($contrato->total_mensual, 2, ',', '.'),
+            ]);
+        }
+    }
+
+    return view('contratos.cuotas_mensuales', compact('cuotas'));
+}
+
 
 }

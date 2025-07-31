@@ -22,6 +22,7 @@
           <thead class="table-light">
             <tr>
               <th>Nombre</th>
+              <th>Alias</th>
               <th>Cuenta Contable</th>
               <th>Acciones</th>
             </tr>
@@ -30,6 +31,7 @@
             @foreach($proveedores as $proveedor)
               <tr>
                 <td>{{ $proveedor->nombre }}</td>
+                <td>{{ $proveedor->alias }}</td>
                 <td>{{ $proveedor->cuenta_contable }}</td>
                 <td>
                   @can('editar proveedores')

@@ -30,8 +30,9 @@ class EmpresaController extends Controller
 
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
+            'alias' => 'required|string|max:25',
             'direccion' => 'nullable|string|max:255',
-            'n_empresa_conta' => 'required|string|max:20',
+            'n_empresa_conta' => 'required|string|max:25',
             'n_empresa_ips' => 'nullable|string|max:20',
             'cif' => 'required|string|size:9|unique:empresas,cif',
         ]);
@@ -54,6 +55,7 @@ class EmpresaController extends Controller
 
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
+            'alias' => 'required|string|max:25',
             'direccion' => 'nullable|string|max:255',
             'n_empresa_conta' => 'required|string|max:20',
             'n_empresa_ips' => 'nullable|string|max:20',

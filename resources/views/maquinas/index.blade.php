@@ -1,6 +1,7 @@
 @extends('layouts.adminlte')
 
 @section('content')<p>
+ 
 <div class="container-fluid">
   <div class="row mb-3">
     <div class="col">
@@ -18,7 +19,7 @@
   <div class="card">
     <div class="card-body">
       <div class="table-responsive">
-        <table id="maquinas-table" class="table table-striped table-bordered align-middle">
+        <table id="maquinas-table" class="table table-striped table-bordered align-middle text-nowrap">
           <thead class="table-light">
             <tr>
               <th>Nº Máquina IPS</th>
@@ -76,17 +77,56 @@
               </tr>
             @endforeach
           </tbody>
+            <tfoot class="table-light">
+            <tr>
+              <th>Nº Máquina IPS</th>
+              <th>Modelo</th>
+              <th>Nº Serie</th>
+              <th>Contrato</th>
+              <th>Kit Asociado</th>
+              <th>Kits instalados</th>
+              <th>Alta</th>
+              <th>Baja</th>
+              <th>Acciones</th>
+            </tr>
+          </tfoot>
         </table>
       </div>
     </div>
   </div>
 </div>
 @endsection
+@push('styles')
+<style>
+  .btn-export-custom {
+    background-color: #fff !important;
+    color: #b12545 !important;
+    border: 1px solid #b12545 !important;
+    box-shadow: none;
+    margin-left: 0.25rem;
+    margin-right: 0.25rem;
+  }
 
+  .btn-export-custom:hover {
+    background-color: #f9f9f9 !important;
+    color: #b12545 !important;
+  }
+</style>
+@endpush
 @push('scripts')
 <script>
   $(document).ready(function () {
-    $('#maquinas-table').DataTable({
+    // Crear inputs de filtro en el footer (excepto columna Acciones)
+    $('#maquinas-table tfoot th').each(function () {
+      var title = $(this).text().trim();
+      if (title && title.toLowerCase() !== 'acciones') {
+        $(this).html('<input type="text" class="form-control form-control-sm" placeholder=" ' + title + '" />');
+      } else {
+        $(this).html('');
+      }
+    });
+
+    var table = $('#maquinas-table').DataTable({
       language: {
         url: '{{ asset("js/datatables/i18n/es-ES.json") }}'
       },
@@ -94,10 +134,45 @@
       pageLength: 10,
       pagingType: "simple_numbers",
 
-      // Mostrar selector y búsqueda uno al lado del otro
-      dom: "<'row mb-3'<'col-md-6'l><'col-md-6'f>>" +
-           "<'row'<'col-12'tr>>" +
-           "<'row mt-3'<'col-md-6'i><'col-md-6'p>>",
+      dom:
+        "<'row align-items-center mb-3'<'col-md-4'l><'col-md-4 text-center'B><'col-md-4'f>>" +
+        "<'row'<'col-12'tr>>" +
+        "<'row mt-3'<'col-md-6'i><'col-md-6'p>>",
+
+      buttons: [
+        {
+          extend: 'copy',
+          text: '<i class="bi bi-clipboard"></i> Copiar',
+          className: 'btn btn-sm btn-export-custom'
+        },
+        {
+          extend: 'excel',
+          text: '<i class="bi bi-file-earmark-excel"></i> Excel',
+          className: 'btn btn-sm btn-export-custom'
+        },
+        {
+          extend: 'csv',
+          text: '<i class="bi bi-filetype-csv"></i> CSV',
+          className: 'btn btn-sm btn-export-custom'
+        },
+        {
+          extend: 'print',
+          text: '<i class="bi bi-printer"></i> Imprimir',
+          className: 'btn btn-sm btn-export-custom'
+        }
+      ],
+
+      // Inicializar filtros por columna
+      initComplete: function () {
+        this.api().columns().every(function () {
+          var column = this;
+          $('input', column.footer()).on('keyup change clear', function () {
+            if (column.search() !== this.value) {
+              column.search(this.value).draw();
+            }
+          });
+        });
+      },
 
       drawCallback: function () {
         $('.dataTables_paginate ul.pagination li a')
