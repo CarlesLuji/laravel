@@ -90,7 +90,7 @@
       <li class="nav-header" style="background: linear-gradient(to right,#495057, #e06e6eff);">APIS</li><p>
 
         <!-- Dropdown Menu 4 -->
-        <li class="nav-item has-treeview menu-open">
+        <li class="nav-item has-treeview menu-close">
            <a href="#" class="nav-link active "style="background-color:#e06e6eff;font-weight: bold;font-style: italic;">
             <i class="bi bi-gear"style="color:pink;"></i>
             <p>
@@ -129,6 +129,12 @@
         <p>Máquinas</p>
       </a>
     </li>
+    <li class="nav-item">
+      <a href="{{ route('contratos.cuotas') }}" class="nav-link"style="background-color:#b4697a9c;">
+        <i class="bi bi-cpu"style="color:#e06e6eff;"></i></i>
+        <p>Reports</p>
+      </a>
+    </li>
           </ul>
         </li>
         <!-- Dropdown Menu 5 -->
@@ -142,10 +148,10 @@
           </a>
           <ul class="nav nav-treeview">
             <li class="nav-item">
-              <a href="{{ route('contratos.cuotas') }}"class="nav-link">Informe de Cuotas</a>
+              <a href="{{ route('contratos.cuotas') }}"class="nav-link">
               <i class="nav-icon bi bi-circle"></i>
-                <p>Analisis Quotas ptes</p>
-              </a>
+                <p>Analisis Quotas ptes</p></a>
+             
             </li>
             <li class="nav-item">
               <a href="#" class="nav-link">

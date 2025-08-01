@@ -281,8 +281,10 @@ public function cuotasMensuales()
         }
     }
 
-    return view('contratos.cuotas_mensuales', compact('cuotas'));
+    return view('contratos.cuotas_mensuales', ['cuotas' => $cuotas]);
 }
+
+
 
 
 }

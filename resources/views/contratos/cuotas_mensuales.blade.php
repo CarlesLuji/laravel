@@ -2,8 +2,17 @@
 
 @section('content')<p>
 <div class="container-fluid">
-    <h2>Informe de Cuotas Mensuales (Solo Pendientes)</h2>
-   <div class="table-responsive">
+  <div class="row mb-3">
+    <div class="col">
+      <h1 class="h3">Cuotas Ptes</h1>
+    </div>
+    <div class="col text-end">
+     
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
         <table id="tabla-cuotas" class="table table-striped table-bordered align-middle text-nowrap">
         <thead>
             <tr>
@@ -44,6 +53,7 @@
     </table>
 </div>
 </div>
+</div></div>
 @endsection
 
 @push('styles')
@@ -61,12 +71,23 @@
     background-color: #f9f9f9 !important;
     color: #b12545 !important;
   }
+  /* 💡 NUEVO: clase para la fila de subtotal */
+ tr.subtotal-row {
+  background-color: red !important; /* ✅ Color marrón oscuro válido */
+  color: white !important;              /* ✅ Texto blanco para contraste */
+  font-weight: bold;
+}
+  table#tabla-cuotas tbody tr.subtotal-row {
+  background-color: #918755ff!important;
+}
+
 </style>
 @endpush
+
 @push('scripts')
 <script>
   $(document).ready(function () {
-    // Crear inputs de filtro en el footer (excepto columna Acciones)
+    // Crear inputs de filtro en el footer
     $('#tabla-cuotas tfoot th').each(function () {
       var title = $(this).text().trim();
       if (title && title.toLowerCase() !== 'acciones') {
@@ -82,8 +103,9 @@
       },
       responsive: true,
       pageLength: 10,
+      ordering: true, // evita que se mezclen los subtotales
       pagingType: "simple_numbers",
-
+      lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Todos"]],
       dom:
         "<'row align-items-center mb-3'<'col-md-4'l><'col-md-4 text-center'B><'col-md-4'f>>" +
         "<'row'<'col-12'tr>>" +
@@ -112,7 +134,6 @@
         }
       ],
 
-      // Inicializar filtros por columna
       initComplete: function () {
         this.api().columns().every(function () {
           var column = this;
@@ -125,6 +146,56 @@
       },
 
       drawCallback: function () {
+        var api = this.api();
+        var rows = api.rows({ page: 'current' }).nodes();
+        var rowCount = rows.length;
+
+        var subtotales = {};
+        var ultimaFilaEmpresa = {};
+
+        // Eliminar subtotales anteriores
+        $(rows).filter('.subtotal-row').remove();
+
+        // Recorrer las filas visibles
+        for (let i = 0; i < rowCount; i++) {
+          const $row = $(rows[i]);
+          const cells = $row.find('td');
+
+          const empresa = $(cells[0]).text().trim();
+          const totalStr = $(cells[6]).text().trim();
+          const total = parseFloat(totalStr.replace(/\./g, '').replace(',', '.')) || 0;
+
+          if (!subtotales[empresa]) {
+            subtotales[empresa] = 0;
+          }
+
+          subtotales[empresa] += total;
+          ultimaFilaEmpresa[empresa] = i; // guardamos el índice de la última fila de esta empresa
+        }
+
+        // Insertar filas de subtotales
+        Object.keys(subtotales).reverse().forEach(function (empresa) {
+          const subtotal = subtotales[empresa];
+          const index = ultimaFilaEmpresa[empresa];
+
+          const subtotalFormatted = subtotal.toLocaleString('es-ES', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          });
+
+         const $subtotalRow = $(`
+  <tr class="subtotal-row" style="background-color: #b12545 !important;">
+    <td colspan="5"style="background-color: #ac9b9fff !important;">${empresa} - Subtotal</td>
+    <td style="background-color: #ac9b9fff !important;"></td>
+    <td class="text-end"style="background-color: #ac9b9fff !important;">${subtotalFormatted}</td>
+  </tr>
+`);
+
+          // Insertar después de la última fila de la empresa
+          $(rows[index]).after($subtotalRow);
+        });
+
+        // Reestilizar paginación
         $('.dataTables_paginate ul.pagination li a')
           .removeClass('page-link')
           .addClass('btn btn-sm btn-outline-danger mx-1');
@@ -134,3 +205,6 @@
   });
 </script>
 @endpush
+
+
+

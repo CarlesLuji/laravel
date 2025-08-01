@@ -47,19 +47,19 @@
           </div>
 
           <div class="col-md-2">
-            <label for="numero_contrato" class="form-label">Nº Contrato</label>
-            <input type="text" name="numero_contrato" id="numero_contrato" value="{{ old('numero_contrato') }}" class="form-control @error('numero_contrato') is-invalid @enderror">
+            <label for="numero_contrato" class="form-label">Nº Contrato (dejar en blanco)</label>
+            <input type="text" name="numero_contrato" id="numero_contrato" value="{{ old('numero_contrato') }}" class="form-control @error('numero_contrato') is-invalid @enderror"readonly>
             @error('numero_contrato') <div class="invalid-feedback">{{ $message }}</div> @enderror
           </div>
 
           <div class="col-md-2">
-            <label for="fecha_inicio" class="form-label">Fecha Inicio</label>
+            <label for="fecha_inicio" class="form-label">Fecha Inicio primera Cuota</label>
             <input type="date" name="fecha_inicio" id="fecha_inicio" value="{{ old('fecha_inicio') }}" class="form-control @error('fecha_inicio') is-invalid @enderror" required>
             @error('fecha_inicio') <div class="invalid-feedback">{{ $message }}</div> @enderror
           </div>
 
           <div class="col-md-2">
-            <label for="fecha_vencimiento" class="form-label">Vencimiento</label>
+            <label for="fecha_vencimiento" class="form-label">Vencimiento última Cuota</label>
             <input type="date" name="fecha_vencimiento" id="fecha_vencimiento" value="{{ old('fecha_vencimiento') }}" class="form-control @error('fecha_vencimiento') is-invalid @enderror" required>
             @error('fecha_vencimiento') <div class="invalid-feedback">{{ $message }}</div> @enderror
           </div>
@@ -141,11 +141,15 @@
             <label class="form-label">Fecha Baja</label>
             <input type="date" name="maquinas[0][fecha_baja]" class="form-control">
           </div>
-          <div class="col-md-2 d-flex align-items-end">
-            <button type="button" class="btn btn-outline-danger btn-sm w-100 add-maquina">
-              <i class="bi bi-plus-lg"></i> Añadir
-            </button>
-          </div>
+          <div class="col-md-2 d-flex align-items-end gap-1">
+  <button type="button" class="btn btn-outline-danger btn-sm w-50 add-maquina">
+    <i class="bi bi-plus-lg">Añadir</i>
+  </button>
+  <button type="button" class="btn btn-outline-secondary btn-sm w-50 remove-last-maquina">
+    <i class="bi bi-dash-lg">Eliminar</i>
+  </button>
+</div>
+
         </div>
       </div>
 
@@ -157,7 +161,13 @@
   </form>
 </div>
 @endsection
-
+@push('styles')
+<style>
+  input[readonly] {
+    background-color: #c77e9bff !important; /* rosa pálido */
+  }
+</style>
+@endpush
 @push('scripts')
 <script>
   document.addEventListener('DOMContentLoaded', function () {
@@ -168,25 +178,42 @@
     });
 
     let index = 1;
-    document.querySelector('#maquinas-container').addEventListener('click', function (e) {
-      if (e.target.closest('.add-maquina')) {
-        const container = document.getElementById('maquinas-container');
+    const container = document.getElementById('maquinas-container');
+
+    container.addEventListener('click', function (e) {
+      const addBtn = e.target.closest('.add-maquina');
+      const removeBtn = e.target.closest('.remove-last-maquina');
+
+      // Añadir nueva máquina
+      if (addBtn) {
         const firstItem = container.querySelector('.maquina-item');
         const newItem = firstItem.cloneNode(true);
 
         newItem.querySelectorAll('input, select').forEach(el => {
           if (el.name) {
             el.name = el.name.replace(/\[\d+\]/, `[${index}]`);
-            el.id = el.id.replace(/_\d+$/, `_${index}`);
-            el.value = '';
+            if (el.id) el.id = el.id.replace(/_\d+$/, `_${index}`);
+            if (el.type !== 'hidden') el.value = '';
           }
         });
 
         container.appendChild(newItem);
         index++;
       }
+
+      // Quitar última máquina añadida
+      if (removeBtn) {
+        const items = container.querySelectorAll('.maquina-item');
+        if (items.length > 1) {
+          items[items.length - 1].remove();
+          index--;
+        } else {
+          alert('Debe haber al menos una máquina asociada.');
+        }
+      }
     });
   });
 </script>
 @endpush
+
 
