@@ -15,24 +15,45 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="font-sans text-gray-900 antialiased">
-    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0"
-         style="
-            background-image: url('/adminlte/dist/assets/img/o.jpg');
-            background-repeat: no-repeat;
-            background-size: cover;
-            background-position: center;
-         ">
+
+    <!-- 🎥 VIDEO de fondo a pantalla completa -->
+    <div class="fixed inset-0 z-[-1] overflow-hidden">
+       <video id="bg-video" autoplay muted playsinline class="w-full h-full object-cover">
+
+            <source src="{{ asset('videos/fondo_login.mp4') }}" type="video/mp4">
+            Tu navegador no soporta video HTML5.
+        </video>
+    </div>
+
+    <!-- 📦 CONTENIDO del login sin tocar -->
+    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
         <div>
             <a href="/">
                 <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
             </a>
         </div>
 
-       <div class="w-full sm:max-w-md mt-6 px-6 py-4 shadow-md overflow-hidden sm:rounded-lg backdrop-blur-md"
-     style="background-color: rgba(255, 255, 255, 0.7);">
-    {{ $slot }}
-</div>
+        <div class="w-full sm:max-w-md mt-6 px-6 py-4 shadow-md overflow-hidden sm:rounded-lg backdrop-blur-md"
+             style="background-color: rgba(255, 255, 255, 0.7);">
+            {{ $slot }}
+        </div>
     </div>
+
+  <!-- 🔁 Reproducción manual del video cada 20 segundos -->
+    <script>
+        const video = document.getElementById('bg-video');
+
+        function playVideoEvery30Seconds() {
+            video.currentTime = 0;
+            video.play();
+        }
+
+        // Reproduce inicialmente
+        playVideoEvery30Seconds();
+
+        // Luego cada 20 segundos
+        setInterval(playVideoEvery30Seconds, 30000);
+    </script>
+
 </body>
 </html>
-

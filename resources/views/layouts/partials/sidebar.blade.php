@@ -137,26 +137,75 @@
     </li>
           </ul>
         </li>
-        <!-- Dropdown Menu 5 -->
-        <li class="nav-item has-treeview">
-          <a href="#" class="nav-link">
-            <i class="nav-icon bi bi-pie-chart"></i>
+
+         <!-- Dropdown Menu 4 -->
+        <li class="nav-item has-treeview menu-close">
+           <a href="#" class="nav-link active "style="background-color:#862061e3;font-weight: bold;font-style: italic;">
+            <i class="bi bi-gear"style="color:pink;"></i>
             <p>
-              Renting Reports
+              Api Caja Joymaster
               <i class="nav-arrow bi bi-chevron-right"></i>
             </p>
           </a>
           <ul class="nav nav-treeview">
             <li class="nav-item">
-              <a href="{{ route('contratos.cuotas') }}"class="nav-link">
+              <a href="{{ route('empresas.index') }}" class="nav-link"style="background-color:#ed7ad45c">
+                <i class="bi bi-building"style="color:#e06e6eff;"></i>
+                <p>Empresas</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{{ route('proveedores.index') }}" class="nav-link"style="background-color:#ed7ad45c">
+                <i class="bi bi-building"style="color:#e06e6eff;"></i>
+                <p>Proveedores</p>
+              </a>
+            </li><li class="nav-item">
+      <a href="{{ route('rdors.index') }}" class="nav-link"style="background-color:#ed7ad45c">
+        <i class="bi bi-people-fill"style="color:#e06e6eff;"></i>
+        <p>Recaudadores</p>
+      </a>
+    </li>
+            <li class="nav-item">
+      <a href="{{ route('conceptos.index') }}" class="nav-link"style="background-color:#ed7ad45c">
+        <i class="bi bi-gear"style="color:#e06e6eff;"></i>
+        <p>Conceptos</p>
+      </a>
+    </li>
+
+     <li class="nav-item">
+      <a href="{{ route('maquinas.index') }}" class="nav-link"style="background-color:#ed7ad45c">
+        <i class="bi bi-people"style="color:#e06e6eff;"></i>
+        <p>Personal</p>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="{{ route('contratos.cuotas') }}" class="nav-link"style="background-color:#ed7ad45c">
+        <i class="bi bi-cpu"style="color:#e06e6eff;"></i></i>
+        <p>Reports</p>
+      </a>
+    </li>
+          </ul>
+        </li>
+        <!-- Dropdown Menu 5 -->
+        <li class="nav-item has-treeview">
+          <a href="#" class="nav-link">
+            <i class="nav-icon bi bi-pie-chart"></i>
+            <p>
+              Reports
+              <i class="nav-arrow bi bi-chevron-right"></i>
+            </p>
+          </a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item">
+              <a href="#"class="nav-link">
               <i class="nav-icon bi bi-circle"></i>
-                <p>Analisis Quotas ptes</p></a>
+                <p>Report 1</p></a>
              
             </li>
             <li class="nav-item">
               <a href="#" class="nav-link">
                 <i class="nav-icon bi bi-circle"></i>
-                <p>Annual</p>
+                <p>Reprort_2</p>
               </a>
             </li>
           </ul>

@@ -24,6 +24,7 @@
               <th>Emp</th>
               <th>Prov</th>
               <th>Nº Cont</th>
+              <th>Nº Maq</th>
               <th>Máquinas</th>
               <th>Kits instalados</th>
               <th>F.Inicio</th>
@@ -43,7 +44,14 @@
                 <td style="text-align:left;">{{ $contrato->empresa->alias }}</td>
                 <td style="text-align:left;">{{ $contrato->proveedor->alias }}</td>
                 <td contenteditable="true" class="editable" data-id="{{ $contrato->id }}" data-column="numero_contrato" style="text-align:center;">{{ $contrato->numero_contrato }}</td>
-                
+ @php
+  // Contamos las máquinas que NO son kits (es decir, sin origen)
+  $maquinasReales = $contrato->maquinas->whereNull('maquina_origin_id')->count();
+@endphp
+<td style="text-align:center;">
+  {{ $maquinasReales }}
+</td>
+               
                 {{-- Máquinas --}}
 <td style="white-space: normal; max-width: 200px;" data-search="{{ $contrato->maquinas->pluck('numero_maquina_ips')->join(' ') }}">
   @if($contrato->maquinas->isEmpty())
@@ -144,6 +152,7 @@
               <th>Emp</th>
               <th>Prov</th>
               <th>Nº Cont</th>
+              <th>Nº Maq</th>
               <th>Máquinas</th>
               <th>Kits instalados</th>
               <th>F.Inicio</th>
@@ -204,8 +213,8 @@
     });
 
     var table = $('#contratos-table').DataTable({
-      autoWidth: false,
-      scrollX: true,
+      autoWidth: true,
+      scrollX: false,
       columnDefs: [
         { targets: "_all", className: "nowrap" }
       ],

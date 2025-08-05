@@ -68,3 +68,17 @@ Route::post('/contratos/update-inline', [App\Http\Controllers\ContratoController
     ->middleware('auth');
 Route::get('/contratos/cuotas-mensuales', [ContratoController::class, 'cuotasMensuales'])
     ->name('contratos.cuotas');
+    use App\Http\Controllers\RdorController;
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('rdors', RdorController::class)->parameters([
+        'rdors' => 'rdor',
+    ]);
+});
+
+use App\Http\Controllers\ConceptoController;
+Route::middleware(['auth'])->group(function () {
+    Route::resource('conceptos', ConceptoController::class);
+});
+
+
