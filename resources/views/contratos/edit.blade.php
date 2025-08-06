@@ -60,12 +60,14 @@
 
           {{-- Fechas --}}
           <div class="col-md-2">
-            <label for="fecha_firma" class="form-label">Fecha Inicio</label>
-            <input type="date" name="fecha_firma" id="fecha_firma"
-                   value="{{ old('fecha_firma', $contrato->fecha_firma->format('Y-m-d')) }}" 
-                   class="form-control @error('fecha_firma') is-invalid @enderror" required>
-            @error('fecha_firma') <div class="invalid-feedback">{{ $message }}</div> @enderror
-          </div>
+    <label for="fecha_firma" class="form-label">Fecha Firma</label>
+    <input type="date" name="fecha_firma" id="fecha_firma"
+           value="{{ old('fecha_firma', $contrato->fecha_firma ? $contrato->fecha_firma->format('Y-m-d') : '') }}" 
+           class="form-control @error('fecha_firma') is-invalid @enderror" required>
+    @error('fecha_firma') 
+        <div class="invalid-feedback">{{ $message }}</div> 
+    @enderror
+</div>
           <div class="col-md-2">
             <label for="fecha_inicio" class="form-label">Fecha Inicio</label>
             <input type="date" name="fecha_inicio" id="fecha_inicio"
