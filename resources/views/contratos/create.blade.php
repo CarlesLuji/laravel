@@ -20,7 +20,7 @@
     <div class="card shadow">
       <div class="card-body">
         <div class="row g-3">
-          <div class="col-md-3">
+          <div class="col-md-2">
             <label for="empresa_id" class="form-label">Empresa</label>
             <select name="empresa_id" id="empresa_id" class="form-select @error('empresa_id') is-invalid @enderror" required>
               <option value="">Selecciona una empresa</option>
@@ -33,7 +33,7 @@
             @error('empresa_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
           </div>
 
-          <div class="col-md-3">
+          <div class="col-md-2">
             <label for="proveedor_id" class="form-label">Proveedor</label>
             <select name="proveedor_id" id="proveedor_id" class="form-select @error('proveedor_id') is-invalid @enderror" required>
               <option value="">Selecciona un proveedor</option>
@@ -50,6 +50,12 @@
             <label for="numero_contrato" class="form-label">Nº Contrato (dejar en blanco)</label>
             <input type="text" name="numero_contrato" id="numero_contrato" value="{{ old('numero_contrato') }}" class="form-control @error('numero_contrato') is-invalid @enderror"readonly>
             @error('numero_contrato') <div class="invalid-feedback">{{ $message }}</div> @enderror
+          </div>
+          <div class="col-md-2">
+            <label for="fecha_firma" class="form-label">Fecha firma Contrato</label>
+            <input type="date" name="fecha_firma" id="fecha_firma" value="{{ old('fecha_firma') }}"
+             class="form-control @error('fecha_firma') is-invalid @enderror" required style="background-color: #d4edda;">
+            @error('fecha_firma') <div class="invalid-feedback">{{ $message }}</div> @enderror
           </div>
 
           <div class="col-md-2">
@@ -124,6 +130,16 @@
               @endforeach
             </select>
           </div>
+
+          <div class="col-md-3">
+          <label class="form-label">Permiso PDF (máquina)</label>
+          <input 
+            type="file" 
+            name="maquinas[0][archivo_permiso]" 
+            accept="application/pdf" 
+            class="form-control form-control-sm" 
+            style="background-color: #d4edda;">
+        </div>
           <div class="col-md-3">
             <label class="form-label">Kit asociado (opcional)</label>
             <select name="maquinas[0][maquina_origin_id]" class="form-select">
@@ -164,7 +180,7 @@
 @push('styles')
 <style>
   input[readonly] {
-    background-color: #c77e9bff !important; /* rosa pálido */
+    background-color: #e0acc1ff !important; /* rosa pálido */
   }
 </style>
 @endpush
@@ -192,8 +208,20 @@
         newItem.querySelectorAll('input, select').forEach(el => {
           if (el.name) {
             el.name = el.name.replace(/\[\d+\]/, `[${index}]`);
-            if (el.id) el.id = el.id.replace(/_\d+$/, `_${index}`);
-            if (el.type !== 'hidden') el.value = '';
+          }
+
+          if (el.id) {
+            el.id = el.id.replace(/_\d+$/, `_${index}`);
+          }
+
+          // Resetear valores excepto campos hidden
+          if (el.type !== 'hidden') {
+            el.value = '';
+          }
+
+          // Si es input file, limpiarlo (especialmente archivo_permiso)
+          if (el.type === 'file') {
+            el.value = '';
           }
         });
 
@@ -215,5 +243,3 @@
   });
 </script>
 @endpush
-
-

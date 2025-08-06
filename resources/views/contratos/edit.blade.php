@@ -60,6 +60,13 @@
 
           {{-- Fechas --}}
           <div class="col-md-2">
+            <label for="fecha_firma" class="form-label">Fecha Inicio</label>
+            <input type="date" name="fecha_firma" id="fecha_firma"
+                   value="{{ old('fecha_firma', $contrato->fecha_firma->format('Y-m-d')) }}" 
+                   class="form-control @error('fecha_firma') is-invalid @enderror" required>
+            @error('fecha_firma') <div class="invalid-feedback">{{ $message }}</div> @enderror
+          </div>
+          <div class="col-md-2">
             <label for="fecha_inicio" class="form-label">Fecha Inicio</label>
             <input type="date" name="fecha_inicio" id="fecha_inicio"
                    value="{{ old('fecha_inicio', $contrato->fecha_inicio->format('Y-m-d')) }}" 
@@ -112,118 +119,95 @@
           </div>
 
           {{-- PDF contrato --}}
-          <div class="col-md-3">
+          <div class="col-md-4">
             <label for="ruta_pdf" class="form-label">Contrato PDF</label>
             <div class="input-group align-items-center">
-                <label class="btn btn-danger mb-0" for="ruta_pdf">
-                    <i class="bi bi-upload"></i>
-                </label>
-                <input type="file" name="ruta_pdf" id="ruta_pdf" class="d-none" accept="application/pdf">
-                <span id="nombreArchivo" class="ms-2 text-muted small">
-                  {{ $contrato->ruta_pdf ? $contrato->ruta_pdf : 'Ningún archivo seleccionado' }}
-                </span>
+              <label class="btn btn-danger mb-0" for="ruta_pdf">
+                <i class="bi bi-upload"></i>
+              </label>
+              <input type="file" name="ruta_pdf" id="ruta_pdf" class="d-none" accept="application/pdf">
+              <span id="nombreArchivo" class="ms-2 text-muted small">
+                {{ $contrato->ruta_pdf ? $contrato->ruta_pdf : 'Ningún archivo seleccionado' }}
+              </span>
             </div>
-            @error('ruta_pdf') <div class="text-danger">{{ $message }}</div> @enderror
+            @error('ruta_pdf') <div class="text-danger mt-1">{{ $message }}</div> @enderror
 
             @if ($contrato->ruta_pdf)
-                <p class="mt-2">
-                    <a href="{{ asset('storage/contratos/' . $contrato->ruta_pdf) }}" target="_blank">
-                        Ver contrato actual
-                    </a>
-                </p>
+              <p class="mt-2">
+                <a href="{{ asset('storage/contratos/' . $contrato->ruta_pdf) }}" target="_blank" class="btn btn-sm btn-outline-success">
+                  <i class="bi bi-file-earmark-pdf"></i> Ver PDF actual
+                </a>
+              </p>
             @endif
           </div>
+
         </div>
       </div>
 
-      <hr>
-
-     {{-- Máquinas asociadas --}}
-<h5 class="h3 mb-4 px-3">Máquinas asociadas al Contrato</h5>
-
-<div id="maquinas-container" class="px-3">
-  @foreach($contrato->maquinas as $i => $maquina)
-    <div class="row maquina-item g-2 mb-2 border rounded p-3 align-items-end">
-      <input type="hidden" name="maquinas[{{ $i }}][id]" value="{{ $maquina->id }}">
-
-      {{-- Nº Máquina IPS reducido --}}
-      <div class="col-md-2">
-        <label class="form-label">Nº Máquina IPS</label>
-        <input type="text" name="maquinas[{{ $i }}][numero_maquina_ips]" 
-               value="{{ $maquina->numero_maquina_ips }}" 
-               class="form-control" required>
+      {{-- Máquinas asociadas --}}
+      <h5 class="h3 mb-4 px-3">Máquinas asociadas al Contrato</h5>
+      <div id="maquinas-container" class="px-3">
+        @foreach($contrato->maquinas as $i => $maquina)
+          <div class="row maquina-item g-2 mb-2 border rounded p-3 align-items-end">
+            <input type="hidden" name="maquinas[{{ $i }}][id]" value="{{ $maquina->id }}">
+            <div class="col-md-2">
+              <label class="form-label">Nº Máquina IPS</label>
+              <input type="text" name="maquinas[{{ $i }}][numero_maquina_ips]" value="{{ $maquina->numero_maquina_ips }}" class="form-control" required>
+            </div>
+            <div class="col-md-2">
+              <label class="form-label">Nº Serie</label>
+              <input type="text" name="maquinas[{{ $i }}][numero_serie]" value="{{ $maquina->numero_serie }}" class="form-control">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Modelo</label>
+              <select name="maquinas[{{ $i }}][modelo_maquina_id]" class="form-select">
+                @foreach($modelos as $modelo)
+                  <option value="{{ $modelo->id }}" {{ $maquina->modelo_maquina_id == $modelo->id ? 'selected' : '' }}>
+                    {{ $modelo->marca }} - {{ $modelo->modelo }}
+                  </option>
+                @endforeach
+              </select>
+            </div>
+            <div class="col-md-2">
+              <label class="form-label">Kit asociado</label>
+              <select name="maquinas[{{ $i }}][maquina_origin_id]" class="form-select">
+                <option value="">— Ninguno —</option>
+                @foreach($maquinasExistentes as $m)
+                  <option value="{{ $m->id }}" {{ $maquina->maquina_origin_id == $m->id ? 'selected' : '' }}>
+                    {{ $m->numero_maquina_ips }}
+                  </option>
+                @endforeach
+              </select>
+            </div>
+            <div class="col-md-1">
+              <label class="form-label">Alta</label>
+              <input type="date" name="maquinas[{{ $i }}][fecha_alta]" value="{{ $maquina->fecha_alta }}" class="form-control">
+            </div>
+            <div class="col-md-1">
+              <label class="form-label">Baja</label>
+              <input type="date" name="maquinas[{{ $i }}][fecha_baja]" value="{{ $maquina->fecha_baja }}" class="form-control">
+            </div>
+            <div class="col-md-1 text-center">
+              <button type="button" class="btn btn-sm btn-outline-danger remove-maquina mt-4">
+                <i class="bi bi-trash">Eliminar</i>
+              </button>
+            </div>
+          </div>
+        @endforeach
       </div>
-
-      {{-- Nº Serie --}}
-      <div class="col-md-2">
-        <label class="form-label">Nº Serie</label>
-        <input type="text" name="maquinas[{{ $i }}][numero_serie]" 
-               value="{{ $maquina->numero_serie }}" 
-               class="form-control">
-      </div>
-
-      {{-- Modelo reducido --}}
-      <div class="col-md-3">
-        <label class="form-label">Modelo</label>
-        <select name="maquinas[{{ $i }}][modelo_maquina_id]" class="form-select">
-          @foreach($modelos as $modelo)
-            <option value="{{ $modelo->id }}" 
-              {{ $maquina->modelo_maquina_id == $modelo->id ? 'selected' : '' }}>
-              {{ $modelo->marca }} - {{ $modelo->modelo }}
-            </option>
-          @endforeach
-        </select>
-      </div>
-
-      {{-- Kit asociado --}}
-      <div class="col-md-2">
-        <label class="form-label">Kit asociado</label>
-        <select name="maquinas[{{ $i }}][maquina_origin_id]" class="form-select">
-          <option value="">— Ninguno —</option>
-          @foreach($maquinasExistentes as $m)
-            <option value="{{ $m->id }}" 
-              {{ $maquina->maquina_origin_id == $m->id ? 'selected' : '' }}>
-              {{ $m->numero_maquina_ips }}
-            </option>
-          @endforeach
-        </select>
-      </div>
-
-      {{-- Fechas --}}
-      <div class="col-md-1">
-        <label class="form-label">Alta</label>
-        <input type="date" name="maquinas[{{ $i }}][fecha_alta]" 
-               value="{{ $maquina->fecha_alta }}" 
-               class="form-control">
-      </div>
-      <div class="col-md-1">
-        <label class="form-label">Baja</label>
-        <input type="date" name="maquinas[{{ $i }}][fecha_baja]" 
-               value="{{ $maquina->fecha_baja }}" 
-               class="form-control">
-      </div>
-
-      {{-- Botón eliminar en la misma fila --}}
-      <div class="col-md-1 text-center">
-        <button type="button" class="btn btn-sm btn-outline-danger remove-maquina mt-4">
-          <i class="bi bi-trash">Eliminar</i>
+      <div class="px-3 mb-3">
+        <button type="button" id="add-maquina" class="btn btn-sm btn-outline-danger">
+          <i class="bi bi-plus-lg"></i> Añadir máquina
         </button>
       </div>
+
+      <div class="card-footer text-end">
+        <a href="{{ route('contratos.index') }}" class="btn btn-secondary">Cancelar</a>
+        <button type="submit" class="btn btn-danger">Actualizar</button>
+      </div>
     </div>
-  @endforeach
+  </form>
 </div>
-
-<div class="px-3 mb-3">
-  <button type="button" id="add-maquina" class="btn btn-sm btn-outline-danger">
-    <i class="bi bi-plus-lg"></i> Añadir máquina
-  </button>
-</div>
-
-<div class="card-footer text-end">
-  <a href="{{ route('contratos.index') }}" class="btn btn-secondary">Cancelar</a>
-  <button type="submit" class="btn btn-danger">Actualizar</button>
-</div>
-
 @endsection
 
 @push('scripts')
@@ -231,31 +215,21 @@
   document.addEventListener('DOMContentLoaded', function () {
     let index = {{ count($contrato->maquinas) }};
 
-    // Añadir máquina
     document.getElementById('add-maquina').addEventListener('click', function () {
       const container = document.getElementById('maquinas-container');
       const template = container.querySelector('.maquina-item');
       const clone = template.cloneNode(true);
 
-      // Limpiar y actualizar nombres e IDs
       clone.querySelectorAll('input, select').forEach(el => {
-        // Vaciar el valor (menos el hidden "id" si existe)
         if (el.type !== 'hidden') el.value = '';
-
-        // Actualizar name e id
-        if (el.name) {
-          el.name = el.name.replace(/\[\d+\]/, `[${index}]`);
-        }
-        if (el.id) {
-          el.id = el.id.replace(/_\d+$/, `_${index}`);
-        }
+        if (el.name) el.name = el.name.replace(/\[\d+\]/, `[${index}]`);
+        if (el.id) el.id = el.id.replace(/_\d+$/, `_${index}`);
       });
 
       container.appendChild(clone);
       index++;
     });
 
-    // Eliminar máquina
     document.getElementById('maquinas-container').addEventListener('click', function (e) {
       if (e.target.closest('.remove-maquina')) {
         const item = e.target.closest('.maquina-item');
@@ -266,6 +240,17 @@
         }
       }
     });
+
+    const inputPdf = document.getElementById('ruta_pdf');
+    const nombreArchivo = document.getElementById('nombreArchivo');
+    inputPdf.addEventListener('change', function () {
+      if (this.files.length > 0) {
+        nombreArchivo.textContent = this.files[0].name;
+      } else {
+        nombreArchivo.textContent = 'Ningún archivo seleccionado';
+      }
+    });
   });
 </script>
 @endpush
+

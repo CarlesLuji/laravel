@@ -14,6 +14,7 @@ class Contrato extends Model
         'empresa_id',
         'proveedor_id',
         'numero_contrato',
+        'fecha_firma',
         'fecha_inicio',
         'fecha_vencimiento',
         'duracion_meses',
@@ -25,6 +26,8 @@ class Contrato extends Model
         'ruta_pdf',
     ];
      protected $casts = [
+
+    'fecha_firma' => 'date',
     'fecha_inicio' => 'date',
     'fecha_vencimiento' => 'date',
     'duracion_meses' => 'integer',

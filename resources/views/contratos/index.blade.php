@@ -27,6 +27,7 @@
               <th>Nº Maq</th>
               <th>Máquinas</th>
               <th>Kits instalados</th>
+              <th>F.Firma</th>
               <th>F.Inicio</th>
               <th>Vto</th>
               <th>(meses)</th>
@@ -58,13 +59,27 @@
     <span class="text-muted">—</span>
   @else
     @foreach($contrato->maquinas as $maquina)
-      <div style="margin-bottom: 4px;">
+      <div style="margin-bottom: 4px;"> {{-- Permiso PDF --}}
+    @php
+      $archivoPermiso = 'storage/maquinas/' . $maquina->numero_maquina_ips . '.pdf';
+    @endphp
+    @if (file_exists(public_path($archivoPermiso)))
+      <a href="{{ asset($archivoPermiso) }}" target="_blank" class="btn btn-sm btn-outline-success" title="Ver permiso PDF">
+        <i class="bi bi-file-earmark-pdf-fill"></i>
+      </a>
+    @else
+      <span class="text-muted" title="Sin permiso PDF">
+       
+      </span>
+    @endif
+
         <span class="badge" style="background:#f5f5f5; color:#555;">
           {{ $maquina->numero_maquina_ips }}
           <small style="color:#888;">
             ({{ Str::limit($maquina->modelo?->modelo, 10, '') }})
           </small>
         </span>
+        
       </div>
     @endforeach
   @endif
@@ -98,7 +113,8 @@
   @endif
 </td>
 
-
+                <td style="text-align:center; background-color: #fff !important;
+    color: #b12545 !important;">{{ \Carbon\Carbon::parse($contrato->fecha_firma)->format('Y-m-d') }}</td>
                 <td style="text-align:center;">{{ \Carbon\Carbon::parse($contrato->fecha_inicio)->format('Y-m-d') }}</td>
                 <td style="text-align:center;">{{ \Carbon\Carbon::parse($contrato->fecha_vencimiento)->format('Y-m-d') }}</td>
                 <td contenteditable="true" class="editable" data-id="{{ $contrato->id }}" data-column="duracion_meses" style="text-align:center;">{{ $contrato->duracion_meses }}</td>
@@ -155,6 +171,7 @@
               <th>Nº Maq</th>
               <th>Máquinas</th>
               <th>Kits instalados</th>
+              <th>F.Firma</th>
               <th>F.Inicio</th>
               <th>Vto</th>
               <th>(meses)</th>

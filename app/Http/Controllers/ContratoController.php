@@ -53,6 +53,7 @@ public function store(Request $request)
         'empresa_id' => 'required|exists:empresas,id',
         'proveedor_id' => 'required|exists:proveedores,id',
         'numero_contrato' => 'nullable|string|max:100|unique:contratos,numero_contrato',
+        'fecha_firma' => 'required|date',
         'fecha_inicio' => 'required|date',
         'fecha_vencimiento' => 'required|date|after_or_equal:fecha_inicio',
         'duracion' => 'required|integer|min:1',
@@ -63,6 +64,7 @@ public function store(Request $request)
         'maquinas.*.numero_maquina_ips' => 'required|string|max:100',
         'maquinas.*.numero_serie' => 'nullable|string|max:100',
         'maquinas.*.modelo_maquina_id' => 'required|exists:modelos_maquina,id',
+        'maquinas.*.archivo_permiso' => 'nullable|file|mimes:pdf|max:10240', // nuevo
     ]);
 
     // Generar número de contrato si está vacío
@@ -72,7 +74,7 @@ public function store(Request $request)
     $totalMensual = round($validated['importe_mensual'] * (1 + $validated['iva'] / 100), 3);
     $totalContrato = round($totalMensual * $validated['duracion'], 3);
 
-    // Guardar archivo PDF si viene
+    // Guardar archivo PDF del contrato si viene
     $nombreArchivo = null;
     if ($request->hasFile('ruta_pdf')) {
         $pdf = $request->file('ruta_pdf');
@@ -82,33 +84,41 @@ public function store(Request $request)
 
     // Crear contrato
     $contrato = Contrato::create([
-    'empresa_id' => $validated['empresa_id'],
-    'proveedor_id' => $validated['proveedor_id'],
-    'numero_contrato' => $numeroContrato,
-    'fecha_inicio' => $validated['fecha_inicio'],
-    'fecha_vencimiento' => $validated['fecha_vencimiento'],
-    'duracion_meses' => $validated['duracion'],
-    'importe_mensual' => $validated['importe_mensual'],
-    'iva' => $validated['iva'],
-    'total_mensual' => $totalMensual,
-    'total_contrato' => $totalContrato,
-    'valor_residual' => $validated['valor_residual'] ?? 0,
-    'ruta_pdf' => $nombreArchivo,
-]);
+        'empresa_id' => $validated['empresa_id'],
+        'proveedor_id' => $validated['proveedor_id'],
+        'numero_contrato' => $numeroContrato,
+        'fecha_firma' => $validated['fecha_firma'],
+        'fecha_inicio' => $validated['fecha_inicio'],
+        'fecha_vencimiento' => $validated['fecha_vencimiento'],
+        'duracion_meses' => $validated['duracion'],
+        'importe_mensual' => $validated['importe_mensual'],
+        'iva' => $validated['iva'],
+        'total_mensual' => $totalMensual,
+        'total_contrato' => $totalContrato,
+        'valor_residual' => $validated['valor_residual'] ?? 0,
+        'ruta_pdf' => $nombreArchivo,
+    ]);
 
-
-    // Crear máquinas asociadas
-    foreach ($request->input('maquinas', []) as $maquinaData) {
-        Maquina::create([
+    // Crear máquinas asociadas y subir permiso si lo hay
+    foreach ($request->input('maquinas', []) as $index => $maquinaData) {
+        $maquina = Maquina::create([
             'numero_maquina_ips' => $maquinaData['numero_maquina_ips'],
             'numero_serie' => $maquinaData['numero_serie'] ?? null,
             'modelo_maquina_id' => $maquinaData['modelo_maquina_id'],
             'contrato_id' => $contrato->id,
         ]);
+
+        // Subir archivo de permiso por máquina (si viene)
+        if ($request->hasFile("maquinas.$index.archivo_permiso")) {
+            $file = $request->file("maquinas.$index.archivo_permiso");
+            $nombrePermiso = $maquinaData['numero_maquina_ips'] . '.' . $file->getClientOriginalExtension();
+            $file->storeAs('maquinas', $nombrePermiso, 'public');
+        }
     }
 
     return redirect()->route('contratos.index')->with('success', 'Contrato creado con éxito.');
 }
+
 
 
 
@@ -124,7 +134,9 @@ public function store(Request $request)
         return view('contratos.edit', compact('contrato', 'empresas', 'proveedores','modelos','maquinasExistentes'));
     }
 
-  public function update(Request $request, Contrato $contrato)
+ 
+
+public function update(Request $request, Contrato $contrato)
 {
     $this->authorize('editar contratos');
 
@@ -133,12 +145,14 @@ public function store(Request $request)
         'empresa_id' => 'required|exists:empresas,id',
         'proveedor_id' => 'required|exists:proveedores,id',
         'numero_contrato' => 'required|string|max:100|unique:contratos,numero_contrato,' . $contrato->id,
+        'fecha_firma' => 'required|date',
         'fecha_inicio' => 'required|date',
         'fecha_vencimiento' => 'required|date|after_or_equal:fecha_inicio',
         'duracion' => 'required|integer|min:1',
         'importe_mensual' => 'required|numeric|min:0',
         'iva' => 'required|numeric|min:0',
         'valor_residual' => 'nullable|numeric|min:0',
+        'ruta_pdf' => 'nullable|file|mimes:pdf|max:20480',
 
         // Máquinas
         'maquinas.*.id' => 'nullable|exists:maquinas,id',
@@ -154,11 +168,12 @@ public function store(Request $request)
     $totalMensual = round($validated['importe_mensual'] * (1 + $validated['iva'] / 100), 3);
     $totalContrato = round($totalMensual * $validated['duracion'], 3);
 
-    // Actualizar contrato
+    // Actualizar contrato (sin PDF aún)
     $contrato->update([
         'empresa_id' => $validated['empresa_id'],
         'proveedor_id' => $validated['proveedor_id'],
         'numero_contrato' => $validated['numero_contrato'],
+        'fecha_firma' => $validated['fecha_inicio'],
         'fecha_inicio' => $validated['fecha_inicio'],
         'fecha_vencimiento' => $validated['fecha_vencimiento'],
         'duracion_meses' => $validated['duracion'],
@@ -168,6 +183,25 @@ public function store(Request $request)
         'total_mensual' => $totalMensual,
         'total_contrato' => $totalContrato,
     ]);
+
+    // 👉 Manejar archivo PDF si se sube uno nuevo
+    if ($request->hasFile('ruta_pdf')) {        
+        // Eliminar archivo anterior si existe
+        if ($contrato->ruta_pdf && Storage::exists('public/contratos/' . $contrato->ruta_pdf)) {           
+            Storage::delete('public/contratos/' . $contrato->ruta_pdf);
+        }
+
+        // Guardar nuevo archivo PDF
+        $archivo = $request->file('ruta_pdf');
+        $nombre = uniqid() . '_' . $archivo->getClientOriginalName();    
+        
+        $archivo->storeAs('contratos', $nombre, 'public');
+
+        // Actualizar ruta en el modelo
+        $contrato->update([
+            'ruta_pdf' => $nombre,
+        ]);
+    }
 
     // ----------------- ACTUALIZAR MÁQUINAS ----------------- //
 
@@ -215,6 +249,7 @@ public function store(Request $request)
 
 
 
+
     public function destroy(Contrato $contrato)
     {
         $this->authorize('eliminar contratos');
@@ -230,7 +265,7 @@ public function store(Request $request)
 
     $request->validate([
         'id' => 'required|exists:contratos,id',
-        'column' => 'required|string|in:numero_contrato,fecha_inicio,fecha_vencimiento,duracion_meses,importe_mensual,iva,valor_residual',
+        'column' => 'required|string|in:numero_contrato,fecha_firma,fecha_inicio,fecha_vencimiento,duracion_meses,importe_mensual,iva,valor_residual',
         'value' => 'required'
     ]);
 
