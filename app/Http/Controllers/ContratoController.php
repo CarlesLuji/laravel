@@ -140,7 +140,6 @@ public function update(Request $request, Contrato $contrato)
 {
     $this->authorize('editar contratos');
 
-    // Validación del contrato y de las máquinas
     $validated = $request->validate([
         'empresa_id' => 'required|exists:empresas,id',
         'proveedor_id' => 'required|exists:proveedores,id',
@@ -162,18 +161,19 @@ public function update(Request $request, Contrato $contrato)
         'maquinas.*.maquina_origin_id' => 'nullable|exists:maquinas,id',
         'maquinas.*.fecha_alta' => 'nullable|date',
         'maquinas.*.fecha_baja' => 'nullable|date|after_or_equal:maquinas.*.fecha_alta',
+        'maquinas.*.archivo_permiso' => 'nullable|file|mimes:pdf|max:10240',
     ]);
 
     // Recalcular totales
     $totalMensual = round($validated['importe_mensual'] * (1 + $validated['iva'] / 100), 3);
     $totalContrato = round($totalMensual * $validated['duracion'], 3);
 
-    // Actualizar contrato (sin PDF aún)
+    // Actualizar datos del contrato
     $contrato->update([
         'empresa_id' => $validated['empresa_id'],
         'proveedor_id' => $validated['proveedor_id'],
         'numero_contrato' => $validated['numero_contrato'],
-        'fecha_firma' => $validated['fecha_inicio'],
+        'fecha_firma' => $validated['fecha_firma'],
         'fecha_inicio' => $validated['fecha_inicio'],
         'fecha_vencimiento' => $validated['fecha_vencimiento'],
         'duracion_meses' => $validated['duracion'],
@@ -184,33 +184,25 @@ public function update(Request $request, Contrato $contrato)
         'total_contrato' => $totalContrato,
     ]);
 
-    // 👉 Manejar archivo PDF si se sube uno nuevo
-    if ($request->hasFile('ruta_pdf')) {        
-        // Eliminar archivo anterior si existe
-        if ($contrato->ruta_pdf && Storage::exists('public/contratos/' . $contrato->ruta_pdf)) {           
+    // Si se sube nuevo PDF de contrato
+    if ($request->hasFile('ruta_pdf')) {
+        if ($contrato->ruta_pdf && Storage::exists('public/contratos/' . $contrato->ruta_pdf)) {
             Storage::delete('public/contratos/' . $contrato->ruta_pdf);
         }
 
-        // Guardar nuevo archivo PDF
         $archivo = $request->file('ruta_pdf');
-        $nombre = uniqid() . '_' . $archivo->getClientOriginalName();    
-        
+        $nombre = uniqid() . '_' . $archivo->getClientOriginalName();
         $archivo->storeAs('contratos', $nombre, 'public');
-
-        // Actualizar ruta en el modelo
-        $contrato->update([
-            'ruta_pdf' => $nombre,
-        ]);
+        $contrato->update(['ruta_pdf' => $nombre]);
     }
 
-    // ----------------- ACTUALIZAR MÁQUINAS ----------------- //
-
+    // --- ACTUALIZAR MÁQUINAS ---
     $idsEnFormulario = [];
 
     if ($request->has('maquinas')) {
-        foreach ($request->maquinas as $maquinaData) {
+        foreach ($request->maquinas as $index => $maquinaData) {
             if (!empty($maquinaData['id'])) {
-                // Máquina existente -> Actualizar
+                // Actualizar máquina existente
                 $maquina = $contrato->maquinas()->find($maquinaData['id']);
                 if ($maquina) {
                     $maquina->update([
@@ -221,10 +213,18 @@ public function update(Request $request, Contrato $contrato)
                         'fecha_alta' => $maquinaData['fecha_alta'] ?? null,
                         'fecha_baja' => $maquinaData['fecha_baja'] ?? null,
                     ]);
+
+                    // Subir permiso si viene
+                    if ($request->hasFile("maquinas.$index.archivo_permiso")) {
+                        $file = $request->file("maquinas.$index.archivo_permiso");
+                        $nombrePermiso = $maquinaData['numero_maquina_ips'] . '.' . $file->getClientOriginalExtension();
+                        $file->storeAs('maquinas', $nombrePermiso, 'public');
+                    }
+
                     $idsEnFormulario[] = $maquina->id;
                 }
             } else {
-                // Nueva máquina
+                // Crear nueva máquina
                 $nueva = $contrato->maquinas()->create([
                     'numero_maquina_ips' => $maquinaData['numero_maquina_ips'],
                     'numero_serie' => $maquinaData['numero_serie'] ?? null,
@@ -233,22 +233,24 @@ public function update(Request $request, Contrato $contrato)
                     'fecha_alta' => $maquinaData['fecha_alta'] ?? null,
                     'fecha_baja' => $maquinaData['fecha_baja'] ?? null,
                 ]);
+
+                // Subir permiso si viene
+                if ($request->hasFile("maquinas.$index.archivo_permiso")) {
+                    $file = $request->file("maquinas.$index.archivo_permiso");
+                    $nombrePermiso = $maquinaData['numero_maquina_ips'] . '.' . $file->getClientOriginalExtension();
+                    $file->storeAs('maquinas', $nombrePermiso, 'public');
+                }
+
                 $idsEnFormulario[] = $nueva->id;
             }
         }
     }
 
-    // Eliminar las máquinas que ya no están en el formulario
+    // Eliminar máquinas que ya no están en el formulario
     $contrato->maquinas()->whereNotIn('id', $idsEnFormulario)->delete();
 
     return redirect()->route('contratos.index')->with('success', 'Contrato y máquinas actualizados correctamente.');
 }
-
-
-
-
-
-
 
     public function destroy(Contrato $contrato)
     {
@@ -309,17 +311,74 @@ public function cuotasMensuales()
                 'proveedor' => $contrato->proveedor->nombre ?? '',
                 'numero_contrato' => $contrato->numero_contrato,
                 'mes' => $mes->format('Y-m'),
-                'importe_mensual' => number_format($contrato->importe_mensual, 2, ',', '.'),
-                'iva' => number_format($contrato->iva, 2, ',', '.'),
-                'total_mensual' => number_format($contrato->total_mensual, 2, ',', '.'),
+                'importe_mensual' => round($contrato->importe_mensual, 2),
+                'iva' => round($contrato->iva, 2),
+                'total_mensual' => round($contrato->total_mensual, 2),
+               
             ]);
         }
     }
+    // Obtener todos los meses presentes en cualquier contrato
+    $mesesDisponibles = collect();
+    foreach ($contratos as $contrato) {
+        $inicio = $contrato->fecha_inicio->copy();
+        $duracion = $contrato->duracion_meses;
 
-    return view('contratos.cuotas_mensuales', ['cuotas' => $cuotas]);
+        for ($i = 0; $i < $duracion; $i++) {
+            $mesesDisponibles->push($inicio->copy()->addMonths($i)->format('Y-m'));
+        }
+    }
+    $mesesDisponibles = $mesesDisponibles->unique()->sort()->values();
+
+    $anioActual = now()->format('Y');
+    $cuotasMatriz = collect();
+
+    foreach ($contratos as $contrato) {
+        $fila = [
+            'empresa' => $contrato->empresa->nombre ?? '',
+            'proveedor' => $contrato->proveedor->nombre ?? '',
+            'numero_contrato' => $contrato->numero_contrato,
+        ];
+
+        // Inicializamos columnas de meses vacías
+        foreach ($mesesDisponibles as $mes) {
+            $fila[$mes] = null;
+        }
+
+        $totalContrato = 0;
+        $totalAnioActual = 0;
+
+        $inicio = $contrato->fecha_inicio->copy();
+        $duracion = $contrato->duracion_meses;
+
+        for ($i = 0; $i < $duracion; $i++) {
+            $mes = $inicio->copy()->addMonths($i)->format('Y-m');
+            $importe = round($contrato->total_mensual, 2);
+
+            $fila[$mes] = $importe;
+            $totalContrato += $importe;
+
+            if (substr($mes, 0, 4) == $anioActual) {
+                $totalAnioActual += $importe;
+            }
+        }
+
+        $fila['total_contrato'] = $totalContrato;
+        $fila['total_anio'] = $totalAnioActual;
+
+        $cuotasMatriz->push($fila);
+    }
+
+    return view('contratos.cuotas_mensuales', [
+        'cuotas' => $cuotas, // primera tabla
+        'cuotasMatriz' => $cuotasMatriz, // segunda tabla
+        'mesesDisponibles' => $mesesDisponibles,
+        'anioActual' => $anioActual
+    ]);
+}
 }
 
 
 
 
-}
+

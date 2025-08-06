@@ -114,7 +114,7 @@
       <div id="maquinas-container" class="px-3">
         <div class="row maquina-item g-3 mb-2 border rounded p-3">
           <div class="col-md-3">
-            <label class="form-label">Nº Máquina IPS</label>
+            <label class="form-label">Nº Máquina IPS (BB)</label>
             <input type="text" name="maquinas[0][numero_maquina_ips]" class="form-control" required>
           </div>
           <div class="col-md-3">

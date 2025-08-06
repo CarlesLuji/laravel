@@ -151,14 +151,14 @@
           <div class="row maquina-item g-2 mb-2 border rounded p-3 align-items-end">
             <input type="hidden" name="maquinas[{{ $i }}][id]" value="{{ $maquina->id }}">
             <div class="col-md-2">
-              <label class="form-label">Nº Máquina IPS</label>
+              <label class="form-label">Nº Máquina IPS (BB)</label>
               <input type="text" name="maquinas[{{ $i }}][numero_maquina_ips]" value="{{ $maquina->numero_maquina_ips }}" class="form-control" required>
             </div>
             <div class="col-md-2">
               <label class="form-label">Nº Serie</label>
               <input type="text" name="maquinas[{{ $i }}][numero_serie]" value="{{ $maquina->numero_serie }}" class="form-control">
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
               <label class="form-label">Modelo</label>
               <select name="maquinas[{{ $i }}][modelo_maquina_id]" class="form-select">
                 @foreach($modelos as $modelo)
@@ -187,6 +187,21 @@
               <label class="form-label">Baja</label>
               <input type="date" name="maquinas[{{ $i }}][fecha_baja]" value="{{ $maquina->fecha_baja }}" class="form-control">
             </div>
+            <div class="col-md-3">
+  <label class="form-label">Permiso PDF (máquina)</label>
+  @if($maquina->archivo_permiso)
+    <p class="mb-1">
+      <a href="{{ asset('storage/maquinas/' . $maquina->archivo_permiso) }}" target="_blank" class="btn btn-sm btn-outline-success">
+        <i class="bi bi-file-earmark-pdf-fill"></i> Ver PDF
+      </a>
+    </p>
+  @endif
+  <input type="file" 
+         name="maquinas[{{ $i }}][archivo_permiso]" 
+         accept="application/pdf" 
+         class="form-control form-control-sm" 
+         style="background-color: #d4edda;">
+</div>
             <div class="col-md-1 text-center">
               <button type="button" class="btn btn-sm btn-outline-danger remove-maquina mt-4">
                 <i class="bi bi-trash">Eliminar</i>

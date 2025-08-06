@@ -53,7 +53,60 @@
     </table>
 </div>
 </div>
-</div></div>
+
+<div class="card mt-4">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table id="tabla-cuotas-matriz" class="table table-striped table-bordered align-middle text-nowrap">
+        <thead>
+          <tr>
+            <th>Empresa</th>
+            <th>Proveedor</th>
+            <th>Nº Contrato</th>
+            <th>Total Contrato</th>
+            <th>Total Año {{ $anioActual }}</th>
+            @foreach($mesesDisponibles as $mes)
+              <th>{{ $mes }}</th>
+            @endforeach
+          </tr>
+        </thead>
+        <tbody>
+          @foreach ($cuotasMatriz as $fila)
+            <tr>
+              <td>{{ $fila['empresa'] }}</td>
+              <td>{{ $fila['proveedor'] }}</td>
+              <td>{{ $fila['numero_contrato'] }}</td>
+              <td class="text-end">{{ number_format($fila['total_contrato'], 2, ',', '.') }}</td>
+              <td class="text-end">{{ number_format($fila['total_anio'], 2, ',', '.') }}</td>
+              @foreach($mesesDisponibles as $mes)
+                <td class="text-end">
+                  @if(!is_null($fila[$mes]))
+                    {{ number_format($fila[$mes], 2, ',', '.') }}
+                  @else
+                    —
+                  @endif
+                </td>
+              @endforeach
+            </tr>
+          @endforeach
+        </tbody>
+        <tfoot>
+          <tr>
+            <th>Empresa</th>
+            <th>Proveedor</th>
+            <th>Nº Contrato</th>
+            <th>Total Contrato</th>
+            <th>Total Año {{ $anioActual }}</th>
+            @foreach($mesesDisponibles as $mes)
+              <th>{{ $mes }}</th>
+            @endforeach
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+</div>
+
 @endsection
 
 @push('styles')
@@ -203,6 +256,50 @@
       }
     });
   });
+</script>
+<script>
+
+// Crear inputs de filtro solo para las 3 primeras columnas
+$('#tabla-cuotas-matriz tfoot th').each(function (i) {
+  if (i < 3) {
+    var title = $(this).text().trim();
+    $(this).html('<input type="text" class="form-control form-control-sm" placeholder=" ' + title + '" />');
+  } else {
+    $(this).html('');
+  }
+});
+
+var table2 = $('#tabla-cuotas-matriz').DataTable({
+  language: {
+    url: '{{ asset("js/datatables/i18n/es-ES.json") }}'
+  },
+  responsive: true,
+  pageLength: 10,
+  ordering: true,
+  pagingType: "simple_numbers",
+  lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Todos"]],
+  dom:
+    "<'row align-items-center mb-3'<'col-md-4'l><'col-md-4 text-center'B><'col-md-4'f>>" +
+    "<'row'<'col-12'tr>>" +
+    "<'row mt-3'<'col-md-6'i><'col-md-6'p>>",
+  buttons: [
+    { extend: 'copy', text: '<i class="bi bi-clipboard"></i> Copiar', className: 'btn btn-sm btn-export-custom' },
+    { extend: 'excel', text: '<i class="bi bi-file-earmark-excel"></i> Excel', className: 'btn btn-sm btn-export-custom' },
+    { extend: 'csv', text: '<i class="bi bi-filetype-csv"></i> CSV', className: 'btn btn-sm btn-export-custom' },
+    { extend: 'print', text: '<i class="bi bi-printer"></i> Imprimir', className: 'btn btn-sm btn-export-custom' }
+  ],
+  initComplete: function () {
+    this.api().columns().every(function () {
+      var column = this;
+      $('input', column.footer()).on('keyup change clear', function () {
+        if (column.search() !== this.value) {
+          column.search(this.value).draw();
+        }
+      });
+    });
+  }
+});
+
 </script>
 @endpush
 
