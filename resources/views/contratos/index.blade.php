@@ -53,33 +53,32 @@
   {{ $maquinasReales }}
 </td>
                
-                {{-- Máquinas --}}
+               {{-- Máquinas --}}
 <td style="white-space: normal; max-width: 200px;" data-search="{{ $contrato->maquinas->pluck('numero_maquina_ips')->join(' ') }}">
   @if($contrato->maquinas->isEmpty())
     <span class="text-muted">—</span>
   @else
     @foreach($contrato->maquinas as $maquina)
-      <div style="margin-bottom: 4px;"> {{-- Permiso PDF --}}
-    @php
-      $archivoPermiso = 'storage/maquinas/' . $maquina->numero_maquina_ips . '.pdf';
-    @endphp
-    @if (file_exists(public_path($archivoPermiso)))
-      <a href="{{ asset($archivoPermiso) }}" target="_blank" class="btn btn-sm btn-outline-success" title="Ver permiso PDF">
-        <i class="bi bi-file-earmark-pdf-fill"></i>
-      </a>
-    @else
-      <span class="text-muted" title="Sin permiso PDF">
-       
-      </span>
-    @endif
+      @php
+        $archivoPermiso = 'storage/maquinas/' . $maquina->numero_maquina_ips . '.pdf';
+      @endphp
+      <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+        {{-- Botón PDF --}}
+        @if (file_exists(public_path($archivoPermiso)))
+          <a href="{{ asset($archivoPermiso) }}" target="_blank" class="btn btn-sm btn-outline-success" title="Ver permiso PDF" style="padding: 2px 6px;">
+            <i class="bi bi-file-earmark-pdf-fill"></i>
+          </a>
+        @else
+          <span class="text-muted" title="Sin permiso PDF" style="width: 28px; display: inline-block;"></span>
+        @endif
 
-        <span class="badge" style="background:#f5f5f5; color:#555;">
+        {{-- Nº máquina + modelo --}}
+        <span class="badge" style="background:#f5f5f5; color:#555; font-weight: normal;">
           {{ $maquina->numero_maquina_ips }}
           <small style="color:#888;">
             ({{ Str::limit($maquina->modelo?->modelo, 10, '') }})
           </small>
         </span>
-        
       </div>
     @endforeach
   @endif
