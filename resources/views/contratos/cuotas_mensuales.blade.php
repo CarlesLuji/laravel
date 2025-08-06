@@ -63,8 +63,8 @@
             <th>Empresa</th>
             <th>Proveedor</th>
             <th>Nº Contrato</th>
-            <th>Total Contrato</th>
-            <th>Total Año {{ $anioActual }}</th>
+            <th style="font-style: italic;">Total Contrato</th>
+            <th style="font-style: italic;">Total Año {{ $anioActual }}</th>
             @foreach($mesesDisponibles as $mes)
               <th>{{ $mes }}</th>
             @endforeach
@@ -76,8 +76,8 @@
               <td>{{ $fila['empresa'] }}</td>
               <td>{{ $fila['proveedor'] }}</td>
               <td>{{ $fila['numero_contrato'] }}</td>
-              <td class="text-end">{{ number_format($fila['total_contrato'], 2, ',', '.') }}</td>
-              <td class="text-end">{{ number_format($fila['total_anio'], 2, ',', '.') }}</td>
+              <td class="text-end total-col total-contrato">{{ number_format($fila['total_contrato'], 2, ',', '.') }}</td>
+              <td class="text-end total-col">{{ number_format($fila['total_anio'], 2, ',', '.') }}</td>
               @foreach($mesesDisponibles as $mes)
                 <td class="text-end">
                   @if(!is_null($fila[$mes]))
@@ -134,6 +134,25 @@
   background-color: #918755ff!important;
 }
 
+</style>
+<style>
+  /* Fondo elegante para columnas de totales */
+  #tabla-cuotas-matriz td.total-col,
+  #tabla-cuotas-matriz th.total-col {
+    background-color: #f4f6f9 !important; /* gris muy suave */
+    font-weight: bold;
+    color: #333;
+    font-style: italic; /* cursiva */
+  }
+
+  /* Un poco más marcado para Total Contrato */
+  #tabla-cuotas-matriz td.total-contrato,
+  #tabla-cuotas-matriz th.total-contrato {
+    background-color: #edb3b3ff !important; /* azul claro suave */
+    font-weight: bold;
+    color: #1b1b1b;
+    font-style: italic; /* cursiva */
+  }
 </style>
 @endpush
 
