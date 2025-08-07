@@ -22,7 +22,13 @@ class ContratoController extends Controller
     {
         $this->authorize('ver contratos');
 
-        $contratos = Contrato::with(['empresa', 'proveedor'])->get();
+       $contratos = Contrato::with([
+        'empresa',
+        'proveedor',
+        'maquinas.modelo',
+        'maquinas.maquinaOriginal',
+        'maquinas.kitsInstalados'
+    ])->get();
         return view('contratos.index', compact('contratos'));
     }
 
@@ -153,7 +159,6 @@ public function update(Request $request, Contrato $contrato)
         'valor_residual' => 'nullable|numeric|min:0',
         'ruta_pdf' => 'nullable|file|mimes:pdf|max:20480',
 
-        // Máquinas
         'maquinas.*.id' => 'nullable|exists:maquinas,id',
         'maquinas.*.numero_maquina_ips' => 'required|string|max:100',
         'maquinas.*.numero_serie' => 'nullable|string|max:100',
@@ -164,11 +169,10 @@ public function update(Request $request, Contrato $contrato)
         'maquinas.*.archivo_permiso' => 'nullable|file|mimes:pdf|max:10240',
     ]);
 
-    // Recalcular totales
+    // Totales
     $totalMensual = round($validated['importe_mensual'] * (1 + $validated['iva'] / 100), 3);
     $totalContrato = round($totalMensual * $validated['duracion'], 3);
 
-    // Actualizar datos del contrato
     $contrato->update([
         'empresa_id' => $validated['empresa_id'],
         'proveedor_id' => $validated['proveedor_id'],
@@ -184,7 +188,7 @@ public function update(Request $request, Contrato $contrato)
         'total_contrato' => $totalContrato,
     ]);
 
-    // Si se sube nuevo PDF de contrato
+    // PDF nuevo (si se sube)
     if ($request->hasFile('ruta_pdf')) {
         if ($contrato->ruta_pdf && Storage::exists('public/contratos/' . $contrato->ruta_pdf)) {
             Storage::delete('public/contratos/' . $contrato->ruta_pdf);
@@ -196,13 +200,23 @@ public function update(Request $request, Contrato $contrato)
         $contrato->update(['ruta_pdf' => $nombre]);
     }
 
-    // --- ACTUALIZAR MÁQUINAS ---
-    $idsEnFormulario = [];
-
+    // Procesar máquinas (nunca eliminar ninguna)
     if ($request->has('maquinas')) {
         foreach ($request->maquinas as $index => $maquinaData) {
+
+            // Validar que el kit se asocie a una máquina del mismo contrato
+            if (!empty($maquinaData['maquina_origin_id'])) {
+                $maquinaOrigen = Maquina::find($maquinaData['maquina_origin_id']);
+
+                if ($maquinaOrigen && $maquinaOrigen->contrato_id !== $contrato->id) {
+                    return back()->withErrors([
+                        "maquinas.$index.maquina_origin_id" => 'El kit debe asociarse a una máquina del mismo contrato.'
+                    ])->withInput();
+                }
+            }
+
             if (!empty($maquinaData['id'])) {
-                // Actualizar máquina existente
+                // Máquina existente
                 $maquina = $contrato->maquinas()->find($maquinaData['id']);
                 if ($maquina) {
                     $maquina->update([
@@ -214,17 +228,14 @@ public function update(Request $request, Contrato $contrato)
                         'fecha_baja' => $maquinaData['fecha_baja'] ?? null,
                     ]);
 
-                    // Subir permiso si viene
                     if ($request->hasFile("maquinas.$index.archivo_permiso")) {
                         $file = $request->file("maquinas.$index.archivo_permiso");
                         $nombrePermiso = $maquinaData['numero_maquina_ips'] . '.' . $file->getClientOriginalExtension();
                         $file->storeAs('maquinas', $nombrePermiso, 'public');
                     }
-
-                    $idsEnFormulario[] = $maquina->id;
                 }
             } else {
-                // Crear nueva máquina
+                // Máquina nueva
                 $nueva = $contrato->maquinas()->create([
                     'numero_maquina_ips' => $maquinaData['numero_maquina_ips'],
                     'numero_serie' => $maquinaData['numero_serie'] ?? null,
@@ -234,23 +245,18 @@ public function update(Request $request, Contrato $contrato)
                     'fecha_baja' => $maquinaData['fecha_baja'] ?? null,
                 ]);
 
-                // Subir permiso si viene
                 if ($request->hasFile("maquinas.$index.archivo_permiso")) {
                     $file = $request->file("maquinas.$index.archivo_permiso");
                     $nombrePermiso = $maquinaData['numero_maquina_ips'] . '.' . $file->getClientOriginalExtension();
                     $file->storeAs('maquinas', $nombrePermiso, 'public');
                 }
-
-                $idsEnFormulario[] = $nueva->id;
             }
         }
     }
 
-    // Eliminar máquinas que ya no están en el formulario
-    $contrato->maquinas()->whereNotIn('id', $idsEnFormulario)->delete();
-
     return redirect()->route('contratos.index')->with('success', 'Contrato y máquinas actualizados correctamente.');
 }
+
 
     public function destroy(Contrato $contrato)
     {

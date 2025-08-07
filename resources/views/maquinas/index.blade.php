@@ -1,6 +1,7 @@
 @extends('layouts.adminlte')
 
-@section('content')<p>
+@section('content')
+<p></p>
  
 <div class="container-fluid">
   <div class="row mb-3">

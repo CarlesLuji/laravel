@@ -227,30 +227,54 @@
 </div>
 @endsection
 
+
 @push('scripts')
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     let index = {{ count($contrato->maquinas) }};
+    const container = document.getElementById('maquinas-container');
 
-    document.getElementById('add-maquina').addEventListener('click', function () {
-      const container = document.getElementById('maquinas-container');
-      const template = container.querySelector('.maquina-item');
-      const clone = template.cloneNode(true);
+    // Botón para añadir nueva máquina
+    const addBtn = document.getElementById('add-maquina');
+    addBtn.addEventListener('click', function () {
+      const firstItem = container.querySelector('.maquina-item');
+      const newItem = firstItem.cloneNode(true);
 
-      clone.querySelectorAll('input, select').forEach(el => {
-        if (el.type !== 'hidden') el.value = '';
-        if (el.name) el.name = el.name.replace(/\[\d+\]/, `[${index}]`);
-        if (el.id) el.id = el.id.replace(/_\d+$/, `_${index}`);
+      newItem.querySelectorAll('input, select').forEach(el => {
+        // Actualizar nombre e ID con el nuevo índice
+        if (el.name) {
+          el.name = el.name.replace(/\[\d+\]/, `[${index}]`);
+        }
+
+        if (el.id) {
+          el.id = el.id.replace(/_\d+$/, `_${index}`);
+        }
+
+        // Limpiar campos visibles
+        if (el.type !== 'hidden') {
+          el.value = '';
+        }
+
+        if (el.type === 'file') {
+          el.value = '';
+        }
       });
 
-      container.appendChild(clone);
+      // Eliminar input hidden [id] si existe (para nuevas máquinas)
+      const hiddenId = newItem.querySelector('input[name*="[id]"]');
+      if (hiddenId) hiddenId.remove();
+
+      container.appendChild(newItem);
       index++;
     });
 
-    document.getElementById('maquinas-container').addEventListener('click', function (e) {
-      if (e.target.closest('.remove-maquina')) {
-        const item = e.target.closest('.maquina-item');
-        if (document.querySelectorAll('.maquina-item').length > 1) {
+    // Botón para eliminar máquina
+    container.addEventListener('click', function (e) {
+      const removeBtn = e.target.closest('.remove-maquina');
+      if (removeBtn) {
+        const item = removeBtn.closest('.maquina-item');
+        const items = container.querySelectorAll('.maquina-item');
+        if (items.length > 1) {
           item.remove();
         } else {
           alert('Debe haber al menos una máquina asociada.');
@@ -258,16 +282,16 @@
       }
     });
 
+    // Mostrar nombre del archivo de contrato PDF
     const inputPdf = document.getElementById('ruta_pdf');
     const nombreArchivo = document.getElementById('nombreArchivo');
     inputPdf.addEventListener('change', function () {
-      if (this.files.length > 0) {
-        nombreArchivo.textContent = this.files[0].name;
-      } else {
-        nombreArchivo.textContent = 'Ningún archivo seleccionado';
-      }
+      nombreArchivo.textContent = this.files.length > 0 ? this.files[0].name : 'Ningún archivo seleccionado';
     });
   });
 </script>
 @endpush
+
+
+
 
