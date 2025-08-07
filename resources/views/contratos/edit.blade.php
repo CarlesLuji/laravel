@@ -22,7 +22,7 @@
       <div class="card-body">
         <div class="row g-3">
           {{-- Empresa --}}
-          <div class="col-md-3">
+          <div class="col-md-2">
             <label for="empresa_id" class="form-label">Empresa</label>
             <select name="empresa_id" id="empresa_id" class="form-select @error('empresa_id') is-invalid @enderror" required>
               <option value="">Selecciona una empresa</option>
@@ -36,7 +36,7 @@
           </div>
 
           {{-- Proveedor --}}
-          <div class="col-md-3">
+          <div class="col-md-2">
             <label for="proveedor_id" class="form-label">Proveedor</label>
             <select name="proveedor_id" id="proveedor_id" class="form-select @error('proveedor_id') is-invalid @enderror" required>
               <option value="">Selecciona un proveedor</option>

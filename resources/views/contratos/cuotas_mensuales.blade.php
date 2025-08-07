@@ -55,6 +55,9 @@
 </div>
 
 <div class="card mt-4">
+  <div class="card-header bg-light d-flex justify-content-between align-items-center">
+    <h5 class="mb-0 text-danger">Resumen por Contrato - Cuotas {{ $anioActual }}...</h5>
+  </div>
   <div class="card-body">
     <div class="table-responsive">
       <table id="tabla-cuotas-matriz" class="table table-striped table-bordered align-middle text-nowrap">
@@ -276,50 +279,112 @@
     });
   });
 </script>
+
+
+
 <script>
+$(document).ready(function () {
+  // Crear filtros en el footer solo para las 3 primeras columnas
+  $('#tabla-cuotas-matriz tfoot th').each(function (i) {
+    if (i < 3) {
+      const title = $(this).text().trim();
+      $(this).html('<input type="text" class="form-control form-control-sm" placeholder="' + title + '" />');
+    } else {
+      $(this).html('');
+    }
+  });
 
-// Crear inputs de filtro solo para las 3 primeras columnas
-$('#tabla-cuotas-matriz tfoot th').each(function (i) {
-  if (i < 3) {
-    var title = $(this).text().trim();
-    $(this).html('<input type="text" class="form-control form-control-sm" placeholder=" ' + title + '" />');
-  } else {
-    $(this).html('');
-  }
-});
+  const table2 = $('#tabla-cuotas-matriz').DataTable({
+    language: {
+      url: '{{ asset("js/datatables/i18n/es-ES.json") }}'
+    },
+    responsive: true,
+    pageLength: 10,
+    ordering: true,
+    pagingType: "simple_numbers",
+    lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Todos"]],
+    dom:
+      "<'row align-items-center mb-3'<'col-md-4'l><'col-md-4 text-center'B><'col-md-4'f>>" +
+      "<'row'<'col-12'tr>>" +
+      "<'row mt-3'<'col-md-6'i><'col-md-6'p>>",
+    buttons: [
+      { extend: 'copy', text: '<i class="bi bi-clipboard"></i> Copiar', className: 'btn btn-sm btn-export-custom' },
+      { extend: 'excel', text: '<i class="bi bi-file-earmark-excel"></i> Excel', className: 'btn btn-sm btn-export-custom' },
+      { extend: 'csv', text: '<i class="bi bi-filetype-csv"></i> CSV', className: 'btn btn-sm btn-export-custom' },
+      { extend: 'print', text: '<i class="bi bi-printer"></i> Imprimir', className: 'btn btn-sm btn-export-custom' }
+    ],
+    initComplete: function () {
+      this.api().columns().every(function () {
+        const column = this;
+        $('input', column.footer()).on('keyup change clear', function () {
+          if (column.search() !== this.value) {
+            column.search(this.value).draw();
+          }
+        });
+      });
+    },
+    drawCallback: function () {
+      const api = this.api();
+      const totalStartIndex = 3; // Desde "Total Contrato"
+      const subtotales = [];
 
-var table2 = $('#tabla-cuotas-matriz').DataTable({
-  language: {
-    url: '{{ asset("js/datatables/i18n/es-ES.json") }}'
-  },
-  responsive: true,
-  pageLength: 10,
-  ordering: true,
-  pagingType: "simple_numbers",
-  lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Todos"]],
-  dom:
-    "<'row align-items-center mb-3'<'col-md-4'l><'col-md-4 text-center'B><'col-md-4'f>>" +
-    "<'row'<'col-12'tr>>" +
-    "<'row mt-3'<'col-md-6'i><'col-md-6'p>>",
-  buttons: [
-    { extend: 'copy', text: '<i class="bi bi-clipboard"></i> Copiar', className: 'btn btn-sm btn-export-custom' },
-    { extend: 'excel', text: '<i class="bi bi-file-earmark-excel"></i> Excel', className: 'btn btn-sm btn-export-custom' },
-    { extend: 'csv', text: '<i class="bi bi-filetype-csv"></i> CSV', className: 'btn btn-sm btn-export-custom' },
-    { extend: 'print', text: '<i class="bi bi-printer"></i> Imprimir', className: 'btn btn-sm btn-export-custom' }
-  ],
-  initComplete: function () {
-    this.api().columns().every(function () {
-      var column = this;
-      $('input', column.footer()).on('keyup change clear', function () {
-        if (column.search() !== this.value) {
-          column.search(this.value).draw();
+      // Inicializar subtotales desde columna 3
+      api.columns().eq(0).each(function (colIdx) {
+        if (colIdx >= totalStartIndex) {
+          subtotales[colIdx] = 0;
         }
       });
-    });
-  }
-});
 
+      // Sumar valores visibles de la página actual
+      api.rows({ page: 'current' }).every(function () {
+        const row = this.node();
+        $(row).find('td').each(function (colIdx) {
+          if (colIdx >= totalStartIndex) {
+            const texto = $(this).text().trim();
+            const numero = parseFloat(texto.replace(/\./g, '').replace(',', '.'));
+            if (!isNaN(numero)) {
+              subtotales[colIdx] += numero;
+            }
+          }
+        });
+      });
+
+      // Eliminar cualquier fila subtotal anterior
+      $('#tabla-cuotas-matriz tbody tr.subtotal-row').remove();
+
+      // Crear fila de subtotales alineada correctamente
+      const $filaSubtotal = $('<tr class="subtotal-row"></tr>');
+
+      // Insertar celdas vacías para las 3 primeras columnas
+      $filaSubtotal.append('<td style="background-color:#b12545; color:white; font-weight:bold;">Subtotal</td>');
+      $filaSubtotal.append('<td style="background-color:#b12545;"></td>');
+      $filaSubtotal.append('<td style="background-color:#b12545;"></td>');
+
+      // Insertar totales desde la columna 4 en adelante
+      const totalColumnas = api.columns().count();
+      for (let i = totalStartIndex; i < totalColumnas; i++) {
+        const valor = subtotales[i] || 0;
+        const formateado = valor.toLocaleString('es-ES', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        });
+        $filaSubtotal.append(`<td class="text-end" style="background-color:#ac9b9fff;">${formateado}</td>`);
+      }
+
+      // Añadir la fila al final del tbody
+      $('#tabla-cuotas-matriz tbody').append($filaSubtotal);
+
+      // Opcional: estilizar paginación
+      $('.dataTables_paginate ul.pagination li a')
+        .removeClass('page-link')
+        .addClass('btn btn-sm btn-outline-danger mx-1');
+      $('.dataTables_paginate ul.pagination li').removeClass('page-item');
+    }
+  });
+});
 </script>
+
+
 @endpush
 
 
