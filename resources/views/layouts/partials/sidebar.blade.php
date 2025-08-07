@@ -173,7 +173,7 @@
     </li>
 
      <li class="nav-item">
-      <a href="{{ route('maquinas.index') }}" class="nav-link"style="background-color:#ed7ad45c">
+      <a href="{{ route('people.index') }}" class="nav-link"style="background-color:#ed7ad45c">
         <i class="bi bi-people"style="color:#e06e6eff;"></i>
         <p>Personal</p>
       </a>

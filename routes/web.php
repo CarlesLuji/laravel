@@ -80,5 +80,10 @@ use App\Http\Controllers\ConceptoController;
 Route::middleware(['auth'])->group(function () {
     Route::resource('conceptos', ConceptoController::class);
 });
+use App\Http\Controllers\PersonController;
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('people', PersonController::class);
+});
 
 
