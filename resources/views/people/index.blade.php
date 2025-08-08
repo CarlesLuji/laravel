@@ -85,6 +85,7 @@
 @push('scripts')
 <script>
   $(document).ready(function () {
+    // Agregar input de filtro a cada columna del footer
     $('#people-table tfoot th').each(function () {
       var title = $(this).text();
       if (title !== 'Acciones') {
@@ -95,7 +96,9 @@
     });
 
     var table = $('#people-table').DataTable({
-      language: { url: '{{ asset("js/datatables/i18n/es-ES.json") }}' },
+      language: {
+        url: '{{ asset("js/datatables/i18n/es-ES.json") }}'
+      },
       responsive: true,
       pageLength: 10,
       pagingType: "simple_numbers",
@@ -118,9 +121,18 @@
             }
           });
         });
+      },
+      drawCallback: function () {
+        // Aplicar estilos personalizados a la paginación
+        $('.dataTables_paginate ul.pagination li a')
+          .removeClass('page-link')
+          .addClass('btn btn-sm btn-outline-danger mx-1');
+        $('.dataTables_paginate ul.pagination li')
+          .removeClass('page-item');
       }
     });
   });
 </script>
 @endpush
+
 
